@@ -89,6 +89,10 @@ int main() {
 	cout << "Operator * overload with scalar check, x * 5 * 2 * 42:\n";
 	Matrix operator_multiply_x = x * 5 * 2 * 42;
 	operator_multiply_x.print();
+	
+	cout << "Operator * overload with itself check, x * x * x:\n";
+	Matrix operator_multiply_itself_x = x * x * x;
+	operator_multiply_itself_x.print();
 		
 	return 0;
 }

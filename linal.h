@@ -369,19 +369,19 @@ public:
 		return result;
 	}
 	
-	Matrix operator + (const Matrix& right) const {
+	Matrix operator + (Matrix& right) {
 		return Matrix::sum(*this, right);
 	}
 	
-	Matrix operator - (const Matrix& right) const {
+	Matrix operator - (Matrix& right) {
 		return Matrix::subtract(*this, right);
 	}
 	
-	Matrix operator * (const Matrix& right) const {
+	Matrix operator * (Matrix& right) {
 		return Matrix::multiply(*this, right); 
 	}
 	
-	Matrix operator * (double value) const {
+	Matrix operator * (double value) {
 		return Matrix::multiply(*this, value);
 	}
 	
