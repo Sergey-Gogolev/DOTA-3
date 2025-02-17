@@ -17,6 +17,10 @@
 		* unsigned int height --- высота (количество строк)
 		* unsigned int width --- ширина (количество столбцов)
 
+	Конструкторы:
+		* ... Matrix(unsigned int height, unsigned int width) --- Матрица высотой "height" и шириной "width" заполненная нулями
+		* ... Matrix(Matrix) --- Создать клон матрицы
+
 	Методы:
 		* clear() --- Заполнить матрицу нулями
 		* getHeight() --- Получить высоту (так как переменная приватная)
@@ -24,9 +28,9 @@
 		* getElement(unsigned int vert_ind, unsigned int horis_ind) --- Получить элемент строки "vert_ind" и столбца "horis_ind"
 		* getElements() --- Получить все элементы матрицы в виде массива double* (массив линейный, т.е матрица преобразуется в одну строку)
 		* getData() --- Получить все элементы матрицы в исходном виде, т.е в виде двумерного массива double**
+		* getRow(unsigned int vert_ind) --- Получить строку с индексом "vert_ind".
+		* getColumn(unsigned int horis_ind) --- Получить столбец с индексом "horis_ind".
 		* changeElement(unsigned int vert_ind, unsigned int horis_ind) --- Изменить элемент строки "vert_ind" и столбца "horis_ind"
-		* multiplyToNum(double) --- Умножить все элементы матрицы на число
-		* divideToNum(double) --- Поделить все элементы матрицы на число
 		* transpose() --- Транспонировать матрицу
 		* getTranspositioned() --- Получить транспонированную матрицу
 		* getMinor(unsigned int vert_ind, unsigned int horis_ind) --- Получить минорную матрицу (т.е матрицу, полученную вычеркивание строки "vert_ind" и столбца "horis_ind" из исходной матрицы)
@@ -37,22 +41,39 @@
 		* print() --- Вывести на экран консоли матрицу в привычном виде (часто выводит не особо хорошо, но вполне достаточно для отладки)
 		* fill(double value) --- Заполнить матрицу значением "value"
 		* static sum(Matrix*, Matrix*) --- Получить сумму двух матриц
-		* static subtract(Matrix*, Matrix*) --- Получить разность двух матриц
-		* static multiply(Matrix*, Matrix*) --- Получить произведение двух матриц
+		* static subtract(Matrix, Matrix) --- Получить разность двух матриц
+		* static multiply(Matrix, Matrix) --- Получить произведение двух матриц
+		* static multiply(Matrix, double) --- Получить произведение матрицы с числом
+		* static divide(Matrix, double) --- Получить частное матрицы с числом
+
+	Перегруженные операторы:
+		* +(Matrix) --- Позволяет суммировать матрицы
+		* -(Matrix) --- Позволяет вычитать матрицы
+		* *(Matrix) --- Позволяет умножать матрицы
+		* *(double) --- Позволяет умножить матрицу на число
+		* /(double) --- Позволяет делить матрицу на число
 
 Класс, реализующий вектора.
 Двоеточие означает, что Vector наследует Matrix
 * Vector : Matrix:
-	Зависит от: iostream, std::cout, Matrix
+	Зависит от: iostream, cmath, std::cout, Matrix
 	От него зависят: Dekart_System
 
 	Поля (переменные):
 		* unsigned int dimension --- Измерение, т.е количество строк (столбец у вектора всегда один)
 
+	Конструкторы:
+		* ... Vector(unsigned int dimension) --- Создание вектора с измерением/высотой "dimension"
+		* ... Vector(unsigned int dimension, double* coords) --- Создание вектора с измерением "dimension" и координатами "coords"
+		* ... Vector(Vector) --- Создать клон вектора
+
 	Методы:
 		* getDimension() --- Получить измерение
-		* static sum(Vector*, Vector*) --- Получить сумму двух векторов
-		* static scalar_multiply(Vector*, Vector*) --- Получить скалярное произведение двух векторов (ВЫЧИСЛЯЕТ ТОЛЬКО В ПДСК)
+		* getMatrix() --- Получить вектор в виде матрицы
+		* getModule() --- Получить модуль/длину вектора
+		* static sum(Vector, Vector) --- Получить сумму двух векторов
+		* static subtract(Vector, Vector) --- Получить разность двух векторов
+		* static scalar_multiply(Vector, Vector) --- Получить скалярное произведение двух векторов (ВЫЧИСЛЯЕТ ТОЛЬКО В ПДСК)
 		* static vector_multiply(Vector*, Vector*) --- Получить векторное произведение двух векторов (ВЫЧИСЛЯЕТ ТОЛЬКО В ПДСК И РАБОТАЕТ ТОЛЬКО С 3-МЕРНЫМИ ВЕКТОРАМИ)
 
 Класс, реализующий ПДСК в трёхмерном пространстве.
@@ -65,8 +86,17 @@
 		* Vector* Base_dot --- Радиус-вектор точки начала координат (задается в некой "абсолютной" системе координат, например связанной с верхним левым углом монитора компьютера)
 		* Vector** Basis --- Базис - массив векторов, количество равно измерению.
 
-	functions:
+	Конструкторы:
+		* ... Dekart_System() --- Создание ПДСК с т. отсчета (0, 0, 0,) и базисом, состоящим из единичных векторов (1, 0, 0), (0, 1, 0), (0, 0, 1). (ВЕКТОРА НА САМОМ ДЕЛЕ СТОЛБЦЫ)
+
+	Методы:
 		* print() --- Вывести на экран консоли матрицы векторов "Base_dot" и "Basis"
+		* getBaseDot() --- Получить вектор точки отсчета
+		* getBasis() --- Получить базис в виде Vector**, (ЛУЧШЕ ПОКА НЕ ТРОГАТЬ)
+		* changeBaseDot(Vector needed) --- Поменять вектор точки отсчета на (копию) "needed"
+		* changeBasis(unsigned int index, Vector needed) --- Поменять вектор базиса с индексом "index" на (копию) "needed"
 		* getTransformationMatrix(Dekart_System*) --- Получить матрицу перехода (Выражает СТАРЫЕ координаты через НОВЫЕ)
 		* getTransformationMatrix_native(Dekart_System*) --- Получить обратную матрицу перехода (Выражает НОВЫЕ координаты через СТАРЫЕ)
+		
+		( ПОКА РАБОТАЕТ НЕ ОЧЕНЬ АДЕКВАТНО )
 		* switchSystem(Dekart_System*, Vector** vectors, unsigned int v_length) --- Заменить ПДСК  на новую и поменять координаты всех связанных "vectors", количеством "length"
