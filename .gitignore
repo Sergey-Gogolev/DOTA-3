@@ -1,0 +1,5 @@
+# Ignore binary executiables
+*.out
+
+# Ignore pre_build files
+pre_build*

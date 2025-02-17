@@ -1,0 +1,64 @@
+linal.h "documentation"
+
+it contains classes:
+* Matrix
+* Vector
+* Dekart_System
+
+* Matrix:
+	Depends: iostream, std::cout
+	Is_dependency_for: Vector, Dekart_System
+
+	fields:
+		* double** data --- data of the Matrix
+		* unsigned int height --- number of the rows of Matrix
+		* unsigned int width --- number of the columns of Matrix
+
+	functions:
+		* clear() --- fill Matrix with zeros
+		* getHeight() --- get height
+		* getWidth() --- get width
+		* getElement() --- get element
+		* getElements() --- get elements as linear double massive
+		* getData() --- get data as it is
+		* changeElement(unsigned int vert_ind, unsigned int horis_ind) --- change element
+		* multiplyToNum(double) --- multiply Matrix to number
+		* divideToNum(double) --- divide Matrix to number
+		* transpose() --- transpose Matrix
+		* getTranspositioned() --- get transpositioned Matrix
+		* getMinor(unsigned int vert_ind, unsigned int horis_ind) --- get minor Matrix
+		* getDeterminant() --- get determinant
+		* getAdjugated() --- get adjugate Matrix ( Matrix, that is made from algebraic adjugation of each element (and transppositioned))
+		* invert() --- invert Matrix
+		* getInverted() --- get inverted Matrix
+		* print() --- print Matrix in common way
+		* fill(double value) --- fill Matrix with value
+		* static sum(Matrix*, Matrix*) --- sum two Matrix
+		* static subtract(Matrix*, Matrix*) --- subtract two Matrix
+		* static multiply(Matrix*, Matrix*) --- multiply two Matrix
+
+* Vector : Matrix:
+	Depends: iostream, std::cout, Matrix
+	Is_dependency_for: Dekart_System
+
+	fields:
+		* unsigned int dimension
+
+	functions:
+		* getDimension() --- get dimension
+		* static sum(Vector*, Vector*) --- sum two Vector
+		* static scalar_multiply(Vector*, Vector*) --- scalar multiplication of two Vectors
+		* static vector_multiply(Vector*, Vector*) --- vector multiplication of two Vectors
+
+* Dekart_System:
+	Depends: iostream, std::cout, Matrix, Vector
+	Is_dependency_for: NONE
+
+	fields:
+		* Vector* Base_dot
+		* Vector** Basis
+
+	functions:
+		* print() --- print coords of Base_dot and Basis Vectors
+		* static getTransformationMatrix(Dekart_System*, Dekart_System*) --- get transformation Matrix (OLD coords from NEW)
+		* static getTransformationMatrix_native(Dekart_System*, Dekart_System*) --- get transformation Matrix (NEW coords from OLD)
