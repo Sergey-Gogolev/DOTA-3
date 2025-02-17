@@ -112,31 +112,6 @@ public:
 		this->data[vertical_index][horisontal_index] = value;
 	}
 	
-	// Multiply matrix to a number
-	void multiplyToNum(double value) {
-		for (unsigned int i = 0; i < this->height; i++) {
-			for (unsigned int j = 0; j < this->width; j++) {
-				this->data[i][j] *= value;
-			}
-		}
-	}
-	
-	// Divide matrix to a number (all values in it)
-	void divideToNum(double value) {
-		
-		if (value == 0) {
-			cout << "\tdividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)\n";
-			throw std::invalid_argument("dividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)");
-			return;
-		}
-		
-		for (unsigned int i = 0; i < this->height; i++) {
-			for (unsigned int j = 0; j < this->width; j++) {
-				this->data[i][j] /= value;
-			}
-		}
-	}
-	
 	// transpose Matrix
 	void transpose() {
 		
@@ -244,8 +219,7 @@ public:
 	
 	// Invert Matrix
 	void invert() {
-		Matrix needed_matrix = this->getAdjugated();
-		needed_matrix.divideToNum(this->getDeterminant());
+		Matrix needed_matrix = this->getAdjugated() / this->getDeterminant();
 		
 		double** needed_data = new double*[needed_matrix.height];
 		for (unsigned int i = 0; i < needed_matrix.height; i++) {
@@ -263,10 +237,7 @@ public:
 	
 	// Get inverted Matrix
 	Matrix getInverted() const {
-		Matrix result = this->getAdjugated();
-		result.divideToNum(this->getDeterminant());
-		
-		return result;
+	    return  this->getAdjugated() / this->getDeterminant();
 	}
 	
 	// Print Matrix in classical way
@@ -370,6 +341,26 @@ public:
 		return result;
 	}
 	
+	// Get multiplication of Matrix and scalar
+	static Matrix divide(const Matrix& a, double b) {
+		
+		if (b == 0) {
+			cout << "\tdividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)\n";
+			throw std::invalid_argument("dividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)");
+		}
+		
+		// Taking height of Matrix "a" and width of Matrix "a"
+		Matrix result = Matrix(a.height, a.width);
+		
+		for (unsigned int i = 0; i < a.height; i++) {
+			for (unsigned int j = 0; j < a.width; j++) {
+				result.data[i][j] = a.data[i][j] / b;
+			}
+		}
+		
+		return result;
+	}
+	
 	// Operator overloading
 	Matrix operator + (Matrix& right) {
 		return Matrix::sum(*this, right);
@@ -385,6 +376,10 @@ public:
 	
 	Matrix operator * (double value) {
 		return Matrix::multiply(*this, value);
+	}
+
+	Matrix operator / (double value) {
+		return Matrix::divide(*this, value);
 	}
 	
 };

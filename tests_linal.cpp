@@ -100,5 +100,9 @@ int main() {
 	Matrix operator_multiply_itself_x = x * x * x;
 	operator_multiply_itself_x.print();
 	
+	cout << "Operator / overload with scalar check, x / 5 / 2 / 42:\n";
+	Matrix operator_divide_x = x / 5 / 2 / 42;
+	operator_divide_x.print();
+	
 	return 0;
 }
