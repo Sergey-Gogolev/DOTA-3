@@ -1,4 +1,5 @@
 #include<iostream>
+#include<cmath>
 using std::cout;
 
 #define DOUBLE_THRESHOLD 0.000001
@@ -369,6 +370,7 @@ public:
 		return result;
 	}
 	
+	// Operator overloading
 	Matrix operator + (Matrix& right) {
 		return Matrix::sum(*this, right);
 	}
@@ -426,6 +428,11 @@ public:
 	
 	// Obviously destructor of Vector
 	~Vector() {}
+	
+	// Get module/length of the Vector !WORKS ONLY IN ORTOGONAL DEKART_SYSTEM OF COORDINAT!
+	double getModule() const {
+		return sqrt(scalar_multiply(*this, *this));
+	}
 	
 	// Get sum of two Vectors
 	static Vector sum(const Vector& a, const Vector& b) {

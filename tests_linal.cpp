@@ -48,7 +48,9 @@ int main() {
 	
 	cout << " --- Vector Part --- \n";
 	Vector a = Vector(3);
+	a.changeElement(0, 0, 0.5);
 	a.changeElement(1, 0, 1.5);
+	a.changeElement(2, 0, 2.5);
 	
 	cout << "Original a:\n";
 	a.print();
@@ -73,6 +75,10 @@ int main() {
 	Vector vector_multiplication_ab = Vector::vector_multiply(a, b);
 	vector_multiplication_ab.print();
 	
+	cout << "Get module of the Vector a:\n";
+	double module_a = a.getModule();
+	cout << "Module: " << module_a << "\n";
+	
 	cout << " --- Advanced Matrix Part --- \n";
 	cout << "Operator + overload with matrix check, x + y + y:\n";
 	Matrix operator_sum_xy = x + y + y;
@@ -93,6 +99,6 @@ int main() {
 	cout << "Operator * overload with itself check, x * x * x:\n";
 	Matrix operator_multiply_itself_x = x * x * x;
 	operator_multiply_itself_x.print();
-		
+	
 	return 0;
 }
