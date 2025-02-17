@@ -67,6 +67,14 @@ int main() {
 	Vector subtract_ab = Vector::subtract(a, b);
 	subtract_ab.print();
 	
+	cout << "Multiply a to 228:\n";
+	Vector multiply_a = a * 228;
+	multiply_a.print();
+	
+	cout << "Divide a to 1.5:\n";
+	Vector divide_a = a / 1.5;
+	divide_a.print();
+	
 	cout << "Scalar multiplication of a and b:\n";
 	double scalar_multiplication_ab = Vector::scalar_multiply(a, b);
 	cout << scalar_multiplication_ab << "\n";

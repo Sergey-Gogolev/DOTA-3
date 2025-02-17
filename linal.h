@@ -433,11 +433,8 @@ public:
 	// Get sum of two Vectors
 	static Vector sum(const Vector& a, const Vector& b) {
 		
-		Matrix needed_matrix = Matrix::sum(a, b);
-		double* needed_elements = needed_matrix.getElements();
-		
-		// Taking Matrix's "a" dimension as dimension of result Matrix
-		Vector result = Vector(a.getDimension(), needed_elements);
+		double* needed_elements = (Matrix::sum(a, b)).getElements();
+		Vector result = Vector(a.dimension, needed_elements);
 		
 		delete[] needed_elements;
 		return result;
@@ -446,11 +443,28 @@ public:
 	// Get subtract of two Vectors
 	static Vector subtract(const Vector& a, const Vector& b) {
 		
-		Matrix needed_matrix = Matrix::subtract(a, b);
-		double* needed_elements = needed_matrix.getElements();
+		double* needed_elements = (Matrix::subtract(a, b)).getElements();
+		Vector result = Vector(a.dimension, needed_elements);
 		
-		// Taking Matrix's "a" dimension as dimension of result Matrix
-		Vector result = Vector(a.getDimension(), needed_elements);
+		delete[] needed_elements;
+		return result;
+	}
+	
+	// Get multiplication of Vector and scalar
+	static Vector multiply(const Vector& a, double value) {
+		
+		double* needed_elements = (Matrix::multiply(a, value)).getElements();
+		Vector result = Vector(a.dimension, needed_elements);
+		
+		delete[] needed_elements;
+		return result;
+	}
+		
+	// Get division of Vector and scalar
+	static Vector divide(const Vector& a, double value) {
+		
+		double* needed_elements = (Matrix::divide(a, value)).getElements();
+		Vector result = Vector(a.dimension, needed_elements);
 		
 		delete[] needed_elements;
 		return result;
@@ -486,7 +500,23 @@ public:
 		delete[] result_coords;
 		return result;
 	}
-
+	
+	Vector operator + (Vector& right) {
+		return Vector::sum(*this, right);
+	}
+	
+	Vector operator - (Vector& right) {
+		return Vector::subtract(*this, right);
+	}
+	
+	Vector operator * (double value) {
+		return Vector::multiply(*this, value);
+	}
+	
+	Vector operator / (double value) {
+		return Vector::divide(*this, value);
+	}
+	
 };
 
 // 3-dimensional Decart Ortogonal System of Coordinates
@@ -529,8 +559,8 @@ public:
 	}
 	
 	// Get copy of Base_dot
-	Vector* getBaseDot() {
-		return new Vector(*this->base_dot);
+	Vector getBaseDot() {
+		return Vector(*this->base_dot);
 	}
 	
 	// Get Basis as Vector** massiv of Vectors
