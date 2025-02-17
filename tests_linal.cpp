@@ -34,7 +34,7 @@ int main() {
 	Matrix minor_x = x.getMinor(1, 1);
 	minor_x.print();
 	
-	cout << "Get adjugated of x:\n";
+	cout << "Get adjugated x:\n";
 	Matrix adjugated_x = x.getAdjugated();
 	adjugated_x.print();
 	
@@ -103,6 +103,21 @@ int main() {
 	cout << "Operator / overload with scalar check, x / 5 / 2 / 42:\n";
 	Matrix operator_divide_x = x / 5 / 2 / 42;
 	operator_divide_x.print();
+	
+	cout << " --- Dekart System Part --- \n";
+	cout << "Dekart System init dek_sys_x check:\n";
+	Dekart_System dek_sys_x = Dekart_System();
+	dek_sys_x.print();
+	
+	cout << "Dekart System changeBaseDot() and changeBasis() check:\n";
+	Dekart_System dek_sys_y = Dekart_System();
+	
+	dek_sys_y.changeBaseDot( Vector(3, (double[]){ 2, 2, 8 }));
+	dek_sys_y.changeBasis(0, Vector(3, (double[]){ 0, 0, 1 }));
+	dek_sys_y.changeBasis(1, Vector(3, (double[]){ 1, 0, 0 }));
+	dek_sys_y.changeBasis(2, Vector(3, (double[]){ 0, 1, 0 }));
+	
+	dek_sys_y.print();
 	
 	return 0;
 }

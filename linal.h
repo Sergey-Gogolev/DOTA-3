@@ -127,6 +127,7 @@ public:
 			delete[] this->data[i];
 		}
 		delete[] this->data;
+		
 		unsigned int tmp_height = this->height;
 		this->height = width;
 		this->width = tmp_height;
@@ -434,7 +435,7 @@ public:
 		
 		Matrix needed_matrix = Matrix::sum(a, b);
 		double* needed_elements = needed_matrix.getElements();
-
+		
 		// Taking Matrix's "a" dimension as dimension of result Matrix
 		Vector result = Vector(a.getDimension(), needed_elements);
 		
@@ -458,8 +459,7 @@ public:
 	// Return result of scalar multiplication of two Vectors !WORKS ONLY IN ORTOGONAL DEKART_SYSTEM OF COORDINAT!
 	static double scalar_multiply(const Vector& a, const Vector& b) {
 		
-		Matrix a_coords_matrix_transpositioned = a.getTranspositioned();
-		Matrix needed_coords_matrix = Matrix::multiply(a_coords_matrix_transpositioned, b);
+		Matrix needed_coords_matrix = Matrix::multiply(a.getTranspositioned(), b);
 		double* needed_elements = needed_coords_matrix.getElements();
 		double result = needed_elements[0];
 		
@@ -506,15 +506,6 @@ public:
 		basis[2] = new Vector(3, (double[]){ 0, 0, 1 });
 	}
 	
-	// Initialisation of Dekart System of Coordinates with given Basis
-	Dekart_System(Vector** needed_basis) {
-		base_dot = new Vector(3, (double[]){ 0, 0, 0 });
-		basis = new Vector*[3];
-		basis[0] = needed_basis[0];
-		basis[1] = needed_basis[1];
-		basis[2] = needed_basis[2];
-	}
-	
 	// Obviously destructor of Dekart System of Coordinates
 	~Dekart_System() {
 		delete base_dot;
@@ -553,17 +544,15 @@ public:
 	}
 	
 	// Change base_dot to "new_base_dot"
-	void changeBaseDot(Vector* new_base_dot) {
+	void changeBaseDot(Vector new_base_dot) {
 		delete this->base_dot;
-		this->base_dot = new Vector(*new_base_dot);
+		this->base_dot = new Vector(new_base_dot);
 	}
 	
-	// Change basis to "new_basis"
-	void changeBasis(Vector** new_basis) {
-		for (unsigned int i = 0; i < 3; i++) {
-			delete this->basis[i];
-			this->basis[i] = new Vector(*new_basis[i]);
-		}
+	// Change basis with "index", numeration from 0
+	void changeBasis(unsigned int index, const Vector& needed_vector) {
+		delete basis[index];
+		basis[index] = new Vector(needed_vector);
 	}
 	
 	// 
@@ -583,24 +572,16 @@ public:
 				b_support_trans_matrix.changeElement(i, j, b->basis[j]->getElement(i, 0));
 			}
 		}
-		
-		// Getting inverted Matrix of Matrix "a"
-		Matrix a_inverted = a_support_trans_matrix.getInverted();
-		
-		Matrix result = Matrix::multiply(a_inverted, b_support_trans_matrix);
-		
-		return result;
+		return Matrix::multiply(a_support_trans_matrix.getInverted(), b_support_trans_matrix);
 		
 	}
 	
 	// 
 	// Get Basis Transformation Matrix
-	// This one gives capability to get NEW coords from OLD coords, which native (at least, I hope)
+	// This one gives capability to get NEW coords from OLD coords, which native (I hope it is)
 	// 
 	Matrix getTransformationMatrix_native(Dekart_System* b) {
-		Matrix result = this->getTransformationMatrix(b);
-		result.invert();
-		return result;
+		return (this->getTransformationMatrix(b)).getInverted();
 	}
 	
 	// Switch current Dekart System of Coordinates to "new_dk_sys" and change all needed Vectors
