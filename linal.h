@@ -501,6 +501,7 @@ public:
 		return result;
 	}
 	
+	// Operators overloading
 	Vector operator + (Vector& right) {
 		return Vector::sum(*this, right);
 	}
