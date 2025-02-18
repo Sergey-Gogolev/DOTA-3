@@ -112,6 +112,31 @@ int main() {
 	Matrix operator_divide_x = x / 5 / 2 / 42;
 	operator_divide_x.print();
 	
+	cout << "Operator = overload check, x = x * 3 * x / 2 = x * 2 * x / 2:\n";
+	x = x * 3 * x / 2 = x * 2 * x / 2;
+	x.print();
+	
+	cout << "Operator += overload check, x += x * 2:\n";
+	x += x * 2;
+	x.print();
+	
+	cout << "Operator -= overload check, x -= x * 2:\n";
+	x -= x * 2;
+	x.print();
+	
+	cout << " --- Advanced Vector Part --- \n";
+	cout << "Operator = overload check, a = a * 3 / 2 = b * 3 * 5:\n";
+	a = a * 3 / 2 = b * 3 * 5;
+	a.print();
+	
+	cout << "Operator += overload check, a += a * 2:\n";
+	a += a * 2;
+	a.print();
+	
+	cout << "Operator -= overload check, a -= a * 2:\n";
+	a -= a * 2;
+	a.print();
+	
 	cout << " --- Dekart System Part --- \n";
 	cout << "Dekart System init dek_sys_x check:\n";
 	Dekart_System dek_sys_x = Dekart_System();

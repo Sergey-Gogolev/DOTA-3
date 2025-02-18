@@ -36,7 +36,6 @@ public:
 		this->height = root_matrix.height;
 		this->width = root_matrix.width;
 		
-		
 		this->data = new double*[root_matrix.height];
 		for (unsigned int i = 0; i < root_matrix.height; i++) {
 			data[i] = new double[root_matrix.width];
@@ -362,7 +361,69 @@ public:
 		return result;
 	}
 	
+	// 
 	// Operator overloading
+	// 
+	Matrix& operator = (const Matrix& right) {
+		
+		// Check self-assignment
+		if (this == &right) {
+			return *this;
+		}
+		
+		// Delete current "data"
+		for (unsigned int i = 0; i < this->height; i++) {
+			delete[] this->data[i];
+		}
+		delete[] this->data;
+		
+		// Assign needed "right.data"
+		this->height = right.height;
+		this->width = right.width;
+		
+		this->data = new double*[right.height];
+		for (unsigned int i = 0; i < right.height; i++) {
+			data[i] = new double[right.width];
+			
+			for (unsigned int j = 0; j < right.width; j++) {
+				this->data[i][j] = right.data[i][j];
+			}
+		}
+		return *this;
+	}
+	
+	Matrix& operator += (const Matrix& right) {
+		
+		// Basic checks
+		if (this->height != right.height || this->width != right.width) {
+			cout << "\t+= impossible, wrong sizes.\n";
+			throw std::invalid_argument("+= wrong sizes matrix");
+		}
+		
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				this->data[i][j] += right.data[i][j];
+			}
+		}
+		return *this;
+	}
+	
+	Matrix& operator -= (const Matrix& right) {
+		
+		// Basic checks
+		if (this->height != right.height || this->width != right.width) {
+			cout << "\t-= impossible, wrong sizes.\n";
+			throw std::invalid_argument("-= wrong sizes matrix");
+		}
+		
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				this->data[i][j] -= right.data[i][j];
+			}
+		}
+		return *this;
+	}
+	
 	Matrix operator + (Matrix& right) {
 		return Matrix::sum(*this, right);
 	}
@@ -501,7 +562,70 @@ public:
 		return result;
 	}
 	
+	// 
 	// Operators overloading
+	// 
+	Vector& operator = (const Vector& right) {
+		
+		// Check self-assignment
+		if (this == &right) {
+			return *this;
+		}
+		
+		// Delete current "data"
+		for (unsigned int i = 0; i < this->height; i++) {
+			delete[] this->data[i];
+		}
+		delete[] this->data;
+		
+		// Assign needed "right.data"
+		this->dimension = right.dimension;
+		this->height = right.height;
+		this->width = right.width;
+		
+		this->data = new double*[right.height];
+		for (unsigned int i = 0; i < right.height; i++) {
+			data[i] = new double[right.width];
+			
+			for (unsigned int j = 0; j < right.width; j++) {
+				this->data[i][j] = right.data[i][j];
+			}
+		}
+		return *this;
+	}
+	
+	Vector& operator += (const Vector& right) {
+		
+		// Basic checks
+		if (this->height != right.height) {
+			cout << "\t+= impossible, wrong sizes.\n";
+			throw std::invalid_argument("+= wrong sizes vectors");
+		}
+		
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				this->data[i][j] += right.data[i][j];
+			}
+		}
+		return *this;
+	}
+	
+	Vector& operator -= (const Vector& right) {
+		
+		// Basic checks
+		if (this->height != right.height) {
+			cout << "\t-= impossible, wrong sizes.\n";
+			throw std::invalid_argument("-= wrong sizes vectors");
+		}
+		
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				this->data[i][j] -= right.data[i][j];
+			}
+		}
+		return *this;
+	}
+	
 	Vector operator + (Vector& right) {
 		return Vector::sum(*this, right);
 	}
