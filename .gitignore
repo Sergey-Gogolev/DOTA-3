@@ -3,3 +3,6 @@
 
 # Ignore pre_build files
 pre_build*
+
+# Ignore valgrind temp files
+vgcore.*

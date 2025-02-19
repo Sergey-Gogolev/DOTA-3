@@ -124,6 +124,21 @@ int main() {
 	x -= x * 2;
 	x.print();
 	
+	cout << "Dinamic array of Matrix initialisation check:\n";
+	unsigned int length_array_matrix = 100000;
+	Matrix** array_matrix = new Matrix*[length_array_matrix];
+	
+	for (unsigned int i = 0; i < length_array_matrix; i++) {
+		cout << i << " ";
+		array_matrix[i] = new Matrix(20, 20);
+	}
+	cout << "\n";
+	
+	for (unsigned int i = 0; i < length_array_matrix; i++) {
+		delete array_matrix[i];
+	}
+	delete[] array_matrix;
+	
 	cout << " --- Advanced Vector Part --- \n";
 	cout << "Operator = overload check, a = a * 3 / 2 = b * 3 * 5:\n";
 	a = a * 3 / 2 = b * 3 * 5;
@@ -136,6 +151,26 @@ int main() {
 	cout << "Operator -= overload check, a -= a * 2:\n";
 	a -= a * 2;
 	a.print();
+	
+	cout << "Dinamic array of Vectors initialisation check:\n";
+	unsigned int length_array_vector = 100000;
+	Vector** array_vector = new Vector*[length_array_vector];
+	
+	for (unsigned int i = 0; i < length_array_vector; i++) {
+		cout << i << " ";
+		array_vector[i] = new Vector(42, (double[]){ 3, 3, 3, 3, 3, 3, 3,
+													 3, 3, 3, 3, 3, 3, 3,
+													 3, 3, 3, 3, 3, 3, 3,
+													 3, 3, 3, 3, 3, 3, 3,
+													 3, 3, 3, 3, 3, 3, 3,
+													 3, 3, 3, 3, 3, 3, 3});
+	}
+	cout << "\n";
+	
+	for (unsigned int i = 0; i < length_array_vector; i++) {
+		delete array_vector[i];
+	}
+	delete[] array_vector;
 	
 	cout << " --- Dekart System Part --- \n";
 	cout << "Dekart System init dek_sys_x check:\n";
