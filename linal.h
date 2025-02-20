@@ -1,4 +1,5 @@
 #include<iostream>
+#include<vector>
 #include<cmath>
 using std::cout;
 
@@ -104,6 +105,10 @@ public:
 			result[i] = this->data[i][horisontal_index];
 		}
 		return result;
+	}
+	
+	unsigned int getSize() const {
+		return this->height * this->width;
 	}
 	
 	// Change needed element of matrix to value (all values in it)
@@ -424,15 +429,15 @@ public:
 		return *this;
 	}
 	
-	Matrix operator + (Matrix& right) {
+	Matrix operator + (const Matrix& right) {
 		return Matrix::sum(*this, right);
 	}
 	
-	Matrix operator - (Matrix& right) {
+	Matrix operator - (const Matrix& right) {
 		return Matrix::subtract(*this, right);
 	}
 	
-	Matrix operator * (Matrix& right) {
+	Matrix operator * (const Matrix& right) {
 		return Matrix::multiply(*this, right); 
 	}
 	
@@ -468,6 +473,11 @@ public:
 	// Initialisation of Vector with "coords = 0" and dimension "dimension"
 	Vector(unsigned int dimension) : Matrix(dimension, 1) {
 		this->dimension = dimension;
+	}
+	
+	// Initialisation of Vector with Matrix, that matches with given "needed_matrix"
+	Vector(const Matrix& needed_matrix) : Matrix(needed_matrix) {
+		this->dimension = needed_matrix.getSize();
 	}
 	
 	// Initialisation of Vector with given coordinates as "coords_value" and dimension "dimension"
@@ -626,11 +636,11 @@ public:
 		return *this;
 	}
 	
-	Vector operator + (Vector& right) {
+	Vector operator + (const Vector& right) {
 		return Vector::sum(*this, right);
 	}
 	
-	Vector operator - (Vector& right) {
+	Vector operator - (const Vector& right) {
 		return Vector::subtract(*this, right);
 	}
 	
@@ -650,6 +660,7 @@ class Dekart_System {
 protected: 
 	Vector* base_dot;
 	Vector** basis;
+	std::vector<Vector> vectors;
 
 public: 
 	// Basic initialisation of Dekart System of Coordinates
@@ -669,9 +680,17 @@ public:
 		}
 		delete[] basis;
 	}
-
+	
+	// Print all Vectors in Dekart_System
+	void printVectors() const {
+		for (unsigned int i = 0; i < vectors.size(); i++) {
+			cout << "Vector " << i << ":\n";
+			vectors[i].print();
+		}
+	}
+	
 	// Print coords of base_dot and basis Vectors of current Dekart System of Coordinates
-	void print() {
+	void print() const {
 		cout << "Base_dot: \n";
 		base_dot->print();
 		
@@ -681,15 +700,16 @@ public:
 		basis[1]->print();
 		cout << "Basis z: \n";
 		basis[2]->print();
+		printVectors();
 	}
 	
 	// Get copy of Base_dot
-	Vector getBaseDot() {
+	Vector getBaseDot() const {
 		return Vector(*this->base_dot);
 	}
 	
 	// Get Basis as Vector** massiv of Vectors
-	Vector** getBasis() {
+	Vector** getBasis() const {
 		
 		Vector** result = new Vector*[3];
 		for (unsigned int i = 0; i < 3; i++) {
@@ -698,8 +718,13 @@ public:
 		return result;
 	}
 	
+	// Add Vector to Dekart_System
+	void addVector(const Vector& newVector) {
+		vectors.push_back(newVector);
+	}
+	
 	// Change base_dot to "new_base_dot"
-	void changeBaseDot(Vector new_base_dot) {
+	void changeBaseDot(const Vector& new_base_dot) {
 		delete this->base_dot;
 		this->base_dot = new Vector(new_base_dot);
 	}
@@ -710,12 +735,17 @@ public:
 		basis[index] = new Vector(needed_vector);
 	}
 	
+	// Change Vector to needed in "vectors"
+	void changeVector(unsigned int index, const Vector& needed_vector) {
+		vectors[index] = needed_vector;
+	}
+	
 	// 
 	// Get Basis Transformation Matrix
-	// !! It gives capability to get OLD coords from NEW coords,
+	// !! It gives capability to get OLD coords from NEW coords !!
 	// If you want to get more native Transformation Matrix, use "getTransformationMatrix_native()"
 	// 
-	Matrix getTransformationMatrix(Dekart_System* b) {
+	Matrix getTransformationMatrix(const Dekart_System& b) const {
 		
 		// Matrixes that represent both Basis coords
 		Matrix a_support_trans_matrix = Matrix(3, 3);
@@ -724,7 +754,7 @@ public:
 		for (unsigned int i = 0; i < 3; i++) {
 			for (unsigned int j = 0; j < 3; j++) {
 				a_support_trans_matrix.changeElement(i, j, this->basis[j]->getElement(i, 0));
-				b_support_trans_matrix.changeElement(i, j, b->basis[j]->getElement(i, 0));
+				b_support_trans_matrix.changeElement(i, j, b.basis[j]->getElement(i, 0));
 			}
 		}
 		return Matrix::multiply(a_support_trans_matrix.getInverted(), b_support_trans_matrix);
@@ -735,32 +765,18 @@ public:
 	// Get Basis Transformation Matrix
 	// This one gives capability to get NEW coords from OLD coords, which native (I hope it is)
 	// 
-	Matrix getTransformationMatrix_native(Dekart_System* b) {
+	Matrix getTransformationMatrix_native(const Dekart_System& b) const {
 		return (this->getTransformationMatrix(b)).getInverted();
 	}
 	
-	// Switch current Dekart System of Coordinates to "new_dk_sys" and change all needed Vectors
-	void switchSystem(Dekart_System* new_dk_sys, Vector** needed_vectors, unsigned int length_needed_vectors) {
+	// Switch current Dekart System of Coordinates to "new_dk_sys" and change all Vectors in "vectors"
+	void switchSystem(const Dekart_System& new_dk_sys) {
 		
 		Matrix needed_native_transform_matrix = this->getTransformationMatrix_native(new_dk_sys);
 		
-		// NEW_COORDS = TRANS_NATIVE * OLD_COORDS - NEW_BASE_DOT
-		for (unsigned int i = 0; i < length_needed_vectors; i++) {
-			
-			// TRANS_NATIVE * OLD_COORDS
-			Matrix tmp_needed_matrix = needed_vectors[i]->getMatrix();
-			Matrix tmp_matrix = Matrix::multiply(needed_native_transform_matrix, tmp_needed_matrix);
-			
-			// (TMP) - NEW_BASE_DOT
-			Matrix tmp_needed_matrix_2 = new_dk_sys->base_dot->getMatrix();
-			Matrix tmp_matrix_2 = Matrix::subtract(tmp_matrix, tmp_needed_matrix_2);
-			
-			// (VECTOR)(NEW_COORDS = (TMP_2))
-			delete needed_vectors[i];
-			double* needed_elements = tmp_matrix_2.getElements();
-			needed_vectors[i] = new Vector(3, needed_elements);
-			
-			delete[] needed_elements;
+		// vectors[i] = TRANS_NATIVE * (OLD_COORDS - NEW_BASE_DOT)
+		for (unsigned int i = 0; i < vectors.size(); i++) {
+			vectors[i] = Vector( needed_native_transform_matrix * ((vectors[i] - (*new_dk_sys.base_dot)).getMatrix()) );
 		}
 		
 		// Final switches
@@ -769,10 +785,10 @@ public:
 			delete basis[i];
 		}
 		
-		this->base_dot = new Vector(*new_dk_sys->base_dot);
-		this->basis[0] = new Vector(*new_dk_sys->basis[0]);
-		this->basis[1] = new Vector(*new_dk_sys->basis[1]);
-		this->basis[2] = new Vector(*new_dk_sys->basis[2]);
+		this->base_dot = new Vector(*new_dk_sys.base_dot);
+		this->basis[0] = new Vector(*new_dk_sys.basis[0]);
+		this->basis[1] = new Vector(*new_dk_sys.basis[1]);
+		this->basis[2] = new Vector(*new_dk_sys.basis[2]);
 	}
 	
 };

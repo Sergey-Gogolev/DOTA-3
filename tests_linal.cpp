@@ -187,5 +187,16 @@ int main() {
 	
 	dek_sys_y.print();
 	
+	cout << "Vectors adding check:\n";
+	unsigned int length_needed_vectors = 42;
+	for (unsigned int i = 0; i < length_needed_vectors; i++) {
+		dek_sys_x.addVector( Vector(3, (double[]){ 3, 2, 8 }) );
+	}
+	dek_sys_x.printVectors();
+	
+	cout << "Dekart System switch check, dek_sys_x ---> dek_sys_y:\n";
+	dek_sys_x.switchSystem(dek_sys_y);
+	dek_sys_x.print();
+	
 	return 0;
 }
