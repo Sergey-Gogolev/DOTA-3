@@ -658,7 +658,7 @@ protected:
 
 public: 
 	// Check if vectors will make basis (non-linear dependent) or not (linear-dependent)
-	static bool isBasis(Vector** needed_to_check) const {
+	static bool isBasis(Vector** needed_to_check) {
 		
 		Matrix tmp_matrix = Matrix(3, 3);
 		for (unsigned int i = 0; i < 3; i++) {
