@@ -6,3 +6,6 @@ pre_build*
 
 # Ignore valgrind temp files
 vgcore.*
+
+# Ignore need-to-do-list files
+NEED_TO_DO*
