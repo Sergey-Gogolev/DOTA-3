@@ -181,7 +181,6 @@ public:
 	double getDeterminant() const {
 		
 		if (this->height != this->width) {
-			cout << "\tdeterminant doesn't exist, not square matrix.\n";
 			throw std::invalid_argument("determinant doesn't exist, not square matrix.");
 		}
 		
@@ -242,6 +241,9 @@ public:
 	
 	// Get inverted Matrix
 	Matrix getInverted() const {
+		if (this->getDeterminant() == 0) {
+			throw std::invalid_argument("determinant 0, inverted matrix doesn't exist");
+		}
 	    return  this->getAdjugated() / this->getDeterminant();
 	}
 	
@@ -271,7 +273,6 @@ public:
 		
 		// Basic checks
 		if (a.height != b.height || a.width != b.width) {
-			cout << "\tsumming impossible, wrong sizes.\n";
 			throw std::invalid_argument("summing wrong sizes matrix");
 		}
 		
@@ -291,7 +292,6 @@ public:
 		
 		// Basic checks
 		if (a.height != b.height || a.width != b.width) {
-			cout << "\tsubtracting impossible, wrong sizes, leaving and returning NULL.\n";
 			throw std::invalid_argument("subtracting wrong sizes matrix");
 		}
 		
@@ -311,8 +311,7 @@ public:
 		
 		// Basic checks
 		if (a.width != b.height) {
-			cout << "\tmultiplying impossible, wrong sizes.\n";
-			throw std::invalid_argument("multiplying wrong sizes matrix");
+			throw std::invalid_argument("multiplying matrix wrong sizes matrix");
 		}
 
 		// Taking height of Matrix "a" and width of Matrix "b"
@@ -350,7 +349,6 @@ public:
 	static Matrix divide(const Matrix& a, double b) {
 		
 		if (b == 0) {
-			cout << "\tdividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)\n";
 			throw std::invalid_argument("dividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)");
 		}
 		
@@ -401,7 +399,6 @@ public:
 		
 		// Basic checks
 		if (this->height != right.height || this->width != right.width) {
-			cout << "\t+= impossible, wrong sizes.\n";
 			throw std::invalid_argument("+= wrong sizes matrix");
 		}
 		
@@ -417,7 +414,6 @@ public:
 		
 		// Basic checks
 		if (this->height != right.height || this->width != right.width) {
-			cout << "\t-= impossible, wrong sizes.\n";
 			throw std::invalid_argument("-= wrong sizes matrix");
 		}
 		
@@ -608,7 +604,6 @@ public:
 		
 		// Basic checks
 		if (this->height != right.height) {
-			cout << "\t+= impossible, wrong sizes.\n";
 			throw std::invalid_argument("+= wrong sizes vectors");
 		}
 		
@@ -624,7 +619,6 @@ public:
 		
 		// Basic checks
 		if (this->height != right.height) {
-			cout << "\t-= impossible, wrong sizes.\n";
 			throw std::invalid_argument("-= wrong sizes vectors");
 		}
 		
@@ -663,13 +657,48 @@ protected:
 	std::vector<Vector> vectors;
 
 public: 
-	// Basic initialisation of Dekart System of Coordinates
+	// Check if vectors will make basis (non-linear dependent) or not (linear-dependent)
+	static bool isBasis(Vector** needed_to_check) const {
+		
+		Matrix tmp_matrix = Matrix(3, 3);
+		for (unsigned int i = 0; i < 3; i++) {
+			for (unsigned int j = 0; j < 3; j++) {
+				tmp_matrix.changeElement(i, j, needed_to_check[j]->getElement(i, 0) );
+			}
+		}
+		return (tmp_matrix.getDeterminant() != 0);
+	}
+	
+	// Initialisation of default Dekart System of Coordinates
 	Dekart_System() {
 		base_dot = new Vector(3, (double[]){ 0, 0, 0 });
 		basis = new Vector*[3];
 		basis[0] = new Vector(3, (double[]){ 1, 0, 0 });
 		basis[1] = new Vector(3, (double[]){ 0, 1, 0 });
 		basis[2] = new Vector(3, (double[]){ 0, 0, 1 });
+	}
+	
+	// Initialisation clone Dekart_System but without it's vectors
+	Dekart_System(const Dekart_System& needed_dek_sys) {
+		base_dot = new Vector(*needed_dek_sys.base_dot);
+		basis = new Vector*[3];
+		basis[0] = new Vector(*needed_dek_sys.basis[0]);
+		basis[1] = new Vector(*needed_dek_sys.basis[1]);
+		basis[2] = new Vector(*needed_dek_sys.basis[2]);
+	}
+	
+	// Initialisation of Dekart_System with given base_dot and basis
+	Dekart_System(const Vector& needed_base_dot, Vector** needed_basis) {
+		
+		if (not Dekart_System::isBasis(needed_basis)) {
+			throw std::invalid_argument("Attempt to make linear-dependent basis, terminating...");
+		}
+		
+		base_dot = new Vector(needed_base_dot);
+		basis = new Vector*[3];
+		basis[0] = new Vector(*needed_basis[0]);
+		basis[1] = new Vector(*needed_basis[1]);
+		basis[2] = new Vector(*needed_basis[2]);
 	}
 	
 	// Obviously destructor of Dekart System of Coordinates
@@ -710,7 +739,6 @@ public:
 	
 	// Get Basis as Vector** massiv of Vectors
 	Vector** getBasis() const {
-		
 		Vector** result = new Vector*[3];
 		for (unsigned int i = 0; i < 3; i++) {
 			result[i] = new Vector(*this->basis[i]);
@@ -721,18 +749,6 @@ public:
 	// Add Vector to Dekart_System
 	void addVector(const Vector& newVector) {
 		vectors.push_back(newVector);
-	}
-	
-	// Change base_dot to "new_base_dot"
-	void changeBaseDot(const Vector& new_base_dot) {
-		delete this->base_dot;
-		this->base_dot = new Vector(new_base_dot);
-	}
-	
-	// Change basis with "index", numeration from 0
-	void changeBasis(unsigned int index, const Vector& needed_vector) {
-		delete basis[index];
-		basis[index] = new Vector(needed_vector);
 	}
 	
 	// Change Vector to needed in "vectors"
@@ -758,7 +774,6 @@ public:
 			}
 		}
 		return Matrix::multiply(a_support_trans_matrix.getInverted(), b_support_trans_matrix);
-		
 	}
 	
 	// 
@@ -773,12 +788,10 @@ public:
 	void switchSystem(const Dekart_System& new_dk_sys) {
 		
 		Matrix needed_native_transform_matrix = this->getTransformationMatrix_native(new_dk_sys);
-		
 		// vectors[i] = TRANS_NATIVE * (OLD_COORDS - NEW_BASE_DOT)
 		for (unsigned int i = 0; i < vectors.size(); i++) {
 			vectors[i] = Vector( needed_native_transform_matrix * ((vectors[i] - (*new_dk_sys.base_dot)).getMatrix()) );
 		}
-		
 		// Final switches
 		delete base_dot;
 		for (unsigned int i = 0; i < 3; i++) {
@@ -789,6 +802,23 @@ public:
 		this->basis[0] = new Vector(*new_dk_sys.basis[0]);
 		this->basis[1] = new Vector(*new_dk_sys.basis[1]);
 		this->basis[2] = new Vector(*new_dk_sys.basis[2]);
+	}
+	
+	// Change base_dot to "new_base_dot"
+	void changeBaseDot(const Vector& new_base_dot) {
+		
+		Dekart_System tmp_dek_sys = Dekart_System(*this);
+		delete tmp_dek_sys.base_dot;
+		tmp_dek_sys.base_dot = new Vector(new_base_dot);
+		
+		this->switchSystem(tmp_dek_sys);
+	}
+	
+	// Change basis with given
+	void changeBasis(Vector** new_basis) {
+		
+		Dekart_System tmp_dek_sys = Dekart_System( Vector(3, (double[]){0, 0, 0}), new_basis);
+		this->switchSystem(tmp_dek_sys);
 	}
 	
 };
