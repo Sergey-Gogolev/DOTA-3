@@ -477,7 +477,7 @@ public:
 	}
 	
 	// Initialisation of Vector with given coordinates as "coords_value" and dimension "dimension"
-	Vector(unsigned int dimension, double* coords_value) : Matrix(dimension, 1) {
+	Vector(unsigned int dimension, double const* const coords_value) : Matrix(dimension, 1) {
 		this->dimension = dimension;
 		for (unsigned int i = 0; i < dimension; i++) {
 			this->data[i][0] = coords_value[i];
@@ -658,7 +658,7 @@ protected:
 
 public: 
 	// Check if vectors will make basis (non-linear dependent) or not (linear-dependent)
-	static bool isBasis(Vector** needed_to_check) {
+	static bool isBasis(Vector const* const* const needed_to_check) {
 		
 		Matrix tmp_matrix = Matrix(3, 3);
 		for (unsigned int i = 0; i < 3; i++) {
@@ -688,7 +688,7 @@ public:
 	}
 	
 	// Initialisation of Dekart_System with given base_dot and basis
-	Dekart_System(const Vector& needed_base_dot, Vector** needed_basis) {
+	Dekart_System(const Vector& needed_base_dot, Vector const* const* const needed_basis) {
 		
 		if (not Dekart_System::isBasis(needed_basis)) {
 			throw std::invalid_argument("Attempt to make linear-dependent basis, terminating...");
@@ -815,7 +815,7 @@ public:
 	}
 	
 	// Change basis with given
-	void changeBasis(Vector** new_basis) {
+	void changeBasis(Vector const* const* const new_basis) {
 		
 		Dekart_System tmp_dek_sys = Dekart_System( Vector(3, (double[]){0, 0, 0}), new_basis);
 		this->switchSystem(tmp_dek_sys);
