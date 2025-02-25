@@ -409,7 +409,6 @@ public:
 		}
 		return *this;
 	}
-	
 	Matrix& operator -= (const Matrix& right) {
 		
 		// Basic checks
@@ -428,21 +427,35 @@ public:
 	Matrix operator + (const Matrix& right) {
 		return Matrix::sum(*this, right);
 	}
-	
 	Matrix operator - (const Matrix& right) {
 		return Matrix::subtract(*this, right);
 	}
-	
 	Matrix operator * (const Matrix& right) {
 		return Matrix::multiply(*this, right); 
 	}
-	
 	Matrix operator * (double value) {
 		return Matrix::multiply(*this, value);
 	}
-
 	Matrix operator / (double value) {
 		return Matrix::divide(*this, value);
+	}
+	
+	bool operator==(const Matrix& right) const {
+		
+		if (this->height != right.height || this->width != right.width) {
+			return false;
+		}
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				if (this->data[i][j] < right.data[i][j] - DOUBLE_THRESHOLD || this->data[i][j] > right.data[i][j] + DOUBLE_THRESHOLD) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	bool operator!=(const Matrix& right) const {
+		return !((*this) == right);
 	}
 	
 };
@@ -644,6 +657,16 @@ public:
 	
 	Vector operator / (double value) {
 		return Vector::divide(*this, value);
+	}
+	
+	bool operator==(const Vector& right) const {
+		if (this->dimension != right.dimension || this->getMatrix() != right.getMatrix()) {
+			return false;
+		}
+		return true;
+	}
+	bool operator!=(const Vector& right) const {
+		return !((*this) == right);
 	}
 	
 };

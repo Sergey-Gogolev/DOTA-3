@@ -6,6 +6,8 @@ using std::endl;
 
 
 int main() {
+	std::cout << std::boolalpha;
+	char tmp;
 	
 	Matrix x = Matrix(3, 3);
 	x.changeElement(0, 0, 42);
@@ -124,6 +126,22 @@ int main() {
 	x -= x * 2;
 	x.print();
 	
+	cout << "Operator == overload check:\n";
+	cout << "\tx == x: ";
+	cout << (x == x) << "\n";
+
+	cout << "\tx == x * 2: ";
+	cout << (x == x * 2) << "\n";
+	
+	cout << "Operator != overload check:\n";
+	cout << "\tx != x: ";
+	cout << (x != x) << "\n";
+	
+	cout << "\tx != x / 2: ";
+	cout << (x != x / 2) << "\n";
+	
+	std::cin >> tmp;
+	
 	cout << "Dinamic array of Matrix initialisation check:\n";
 	unsigned int length_array_matrix = 100000;
 	Matrix** array_matrix = new Matrix*[length_array_matrix];
@@ -151,6 +169,22 @@ int main() {
 	cout << "Operator -= overload check, a -= a * 2:\n";
 	a -= a * 2;
 	a.print();
+	
+	cout << "Operator == overload check:\n";
+	cout << "\ta == a: ";
+	cout << (a == a) << "\n";
+
+	cout << "\ta == a * 2: ";
+	cout << (a == a * 2) << "\n";
+	
+	cout << "Operator != overload check:\n";
+	cout << "\tx != x: ";
+	cout << (a != a) << "\n";
+	
+	cout << "\tx != x / 2: ";
+	cout << (a != a / 2) << "\n";
+	
+	std::cin >> tmp;
 	
 	cout << "Dinamic array of Vectors initialisation check:\n";
 	unsigned int length_array_vector = 100000;
