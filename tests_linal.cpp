@@ -127,18 +127,12 @@ int main() {
 	x.print();
 	
 	cout << "Operator == overload check:\n";
-	cout << "\tx == x: ";
-	cout << (x == x) << "\n";
-
-	cout << "\tx == x * 2: ";
-	cout << (x == x * 2) << "\n";
+	cout << "\tx == x: " << (x == x) << "\n";
+	cout << "\tx == x * 2: " << (x == x * 2) << "\n";
 	
 	cout << "Operator != overload check:\n";
-	cout << "\tx != x: ";
-	cout << (x != x) << "\n";
-	
-	cout << "\tx != x / 2: ";
-	cout << (x != x / 2) << "\n";
+	cout << "\tx != x: " << (x != x) << "\n";
+	cout << "\tx != x / 2: " << (x != x / 2) << "\n";
 	
 	std::cin >> tmp;
 	
@@ -171,18 +165,32 @@ int main() {
 	a.print();
 	
 	cout << "Operator == overload check:\n";
-	cout << "\ta == a: ";
-	cout << (a == a) << "\n";
-
-	cout << "\ta == a * 2: ";
-	cout << (a == a * 2) << "\n";
+	cout << "\ta == a: " << (a == a) << "\n";
+	cout << "\ta == a * 2: " << (a == a * 2) << "\n";
 	
 	cout << "Operator != overload check:\n";
-	cout << "\tx != x: ";
-	cout << (a != a) << "\n";
+	cout << "\ta != a: " << (a != a) << "\n";
+	cout << "\ta != a / 2: " << (a != a / 2) << "\n";
 	
-	cout << "\tx != x / 2: ";
-	cout << (a != a / 2) << "\n";
+	cout << "Operator < overload check:\n";
+	cout << "\ta < a: " << (a < a) << "\n";
+	cout << "\ta < a * 2: " << (a < a * 2) << "\n";
+	cout << "\ta < a / 2: " << (a < a / 2) << "\n";
+	
+	cout << "Operator > overload check:\n";
+	cout << "\ta > a: " << (a > a) << "\n";
+	cout << "\ta > a / 2: " << (a > a / 2) << "\n";
+	cout << "\ta > a * 2: " << (a > a * 2) << "\n";
+	
+	cout << "Operator <= overload check:\n";
+	cout << "\ta <= a: " << (a <= a) << "\n";
+	cout << "\ta <= a * 2: " << (a <= a * 2) << "\n";
+	cout << "\ta <= a / 2: " << (a <= a / 2) << "\n";
+	
+	cout << "Operator >= overload check:\n";
+	cout << "\ta >= a: " << (a >= a) << "\n";
+	cout << "\ta >= a / 2: " << (a >= a / 2) << "\n";
+	cout << "\ta >= a * 2: " << (a >= a * 2) << "\n";
 	
 	std::cin >> tmp;
 	

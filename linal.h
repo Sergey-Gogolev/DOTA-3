@@ -440,7 +440,7 @@ public:
 		return Matrix::divide(*this, value);
 	}
 	
-	bool operator==(const Matrix& right) const {
+	bool operator == (const Matrix& right) const {
 		
 		if (this->height != right.height || this->width != right.width) {
 			return false;
@@ -454,7 +454,7 @@ public:
 		}
 		return true;
 	}
-	bool operator!=(const Matrix& right) const {
+	bool operator != (const Matrix& right) const {
 		return !((*this) == right);
 	}
 	
@@ -659,14 +659,33 @@ public:
 		return Vector::divide(*this, value);
 	}
 	
-	bool operator==(const Vector& right) const {
+	bool operator == (const Vector& right) const {
 		if (this->dimension != right.dimension || this->getMatrix() != right.getMatrix()) {
 			return false;
 		}
 		return true;
 	}
-	bool operator!=(const Vector& right) const {
+	bool operator != (const Vector& right) const {
 		return !((*this) == right);
+	}
+	
+	bool operator < (const Vector& right) const {
+		if (this->getModule() < right.getModule() - DOUBLE_THRESHOLD) {
+			return true;
+		}
+		return false;
+	}
+	bool operator > (const Vector& right) const {
+		if (this->getModule() > right.getModule() + DOUBLE_THRESHOLD) {
+			return true;
+		}
+		return false;
+	}
+	bool operator <= (const Vector& right) const {
+		return !((*this) > right);
+	}
+	bool operator >= (const Vector& right) const {
+		return !((*this) < right);
 	}
 	
 };
