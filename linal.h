@@ -46,7 +46,7 @@ public:
 			}
 		}
 	}
-
+	
 	// Obviosly destructor
 	~Matrix() {
 		for (unsigned int i = 0; i < this->height; i++) {
@@ -64,7 +64,7 @@ public:
 	double getElement(unsigned int vertical_index, unsigned int horisontal_index) const {
 		return this->data[vertical_index][horisontal_index];
 	}
-
+	
 	// Get elements of Matrix in linear double massive
 	double* getElements() const {
 		
@@ -126,7 +126,7 @@ public:
 				needed_data[i][j] = this->data[j][i];
 			}
 		}
-
+		
 		for (unsigned int i = 0; i < height; i++) {
 			delete[] this->data[i];
 		}
@@ -313,7 +313,7 @@ public:
 		if (a.width != b.height) {
 			throw std::invalid_argument("multiplying matrix wrong sizes matrix");
 		}
-
+		
 		// Taking height of Matrix "a" and width of Matrix "b"
 		Matrix result = Matrix(a.height, b.width);
 		
@@ -332,7 +332,7 @@ public:
 	
 	// Get multiplication of Matrix and scalar
 	static Matrix multiply(const Matrix& a, double b) {
-
+		
 		// Taking height of Matrix "a" and width of Matrix "a"
 		Matrix result = Matrix(a.height, a.width);
 		
@@ -458,7 +458,27 @@ public:
 		return !((*this) == right);
 	}
 	
+	
 };
+
+// Overloading some std functions for Matrix
+std::ostream& operator<<(std::ostream& os, const Matrix& matrix) {
+	for (unsigned int i = 0; i < matrix.getHeight(); i++) {
+		os << "||\t\t";
+		for (unsigned int j = 0; j < matrix.getWidth(); j++) {
+			os << matrix.getElement(i, j) << "\t\t";
+		}
+		if (i != matrix.getHeight() - 1) {
+			os << "||\n";
+		}
+		else {
+			os << "||";
+		}
+	}
+	return os;
+}
+
+
 
 class Vector : public Matrix {
 
@@ -690,6 +710,26 @@ public:
 	
 };
 
+// Overloading some std functions for Vector
+std::ostream& operator<<(std::ostream& os, const Vector& vector) {
+	os << "(";
+	for (unsigned int i = 0; i < vector.getHeight() - 1; i++) {
+		os << vector.getElement(i, 0) << "; ";
+	}
+	os << vector.getElement(vector.getHeight() - 1, 0) << ")";
+	return os;
+}
+
+std::istream& operator>>(std::istream &is, Vector& vector) {
+	double tmp;
+	for (unsigned int i = 0; i < vector.getHeight(); i++) {
+		is >> tmp;
+		vector.changeElement(i, 0, tmp);
+	}
+	return is;
+}
+
+
 // 3-dimensional Decart Ortogonal System of Coordinates
 class Dekart_System {
 
@@ -788,6 +828,19 @@ public:
 		return result;
 	}
 	
+	// Get Vector
+	Vector getVector(unsigned int given_index) const {
+		if (given_index >= vectors.size()) {
+			throw std::invalid_argument("Error: index is bigger than number of vectors, terminating...");
+		}
+		return vectors[given_index];
+	}
+	
+	// Get number of Vectors in "vectors"
+	unsigned int getNumberOfVectors() const {
+		return vectors.size();
+	}
+	
 	// Add Vector to Dekart_System
 	void addVector(const Vector& newVector) {
 		vectors.push_back(newVector);
@@ -796,6 +849,14 @@ public:
 	// Change Vector to needed in "vectors"
 	void changeVector(unsigned int index, const Vector& needed_vector) {
 		vectors[index] = needed_vector;
+	}
+	
+	// Delete Vector from "vectors"
+	void removeVector(unsigned int index) {
+		if (index >= vectors.size()) {
+			throw std::invalid_argument("Error: index is bigger than number of vectors, terminating...");
+		}
+		vectors.erase(vectors.begin() + index);
 	}
 	
 	// 

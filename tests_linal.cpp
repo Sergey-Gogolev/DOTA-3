@@ -134,6 +134,9 @@ int main() {
 	cout << "\tx != x: " << (x != x) << "\n";
 	cout << "\tx != x / 2: " << (x != x / 2) << "\n";
 	
+	cout << "Operator << overload check, cout << x << \" GG \\n\":\n";
+	cout << x  << " GG \n"<< "\n";
+	
 	std::cin >> tmp;
 	
 	cout << "Dinamic array of Matrix initialisation check:\n";
@@ -191,6 +194,14 @@ int main() {
 	cout << "\ta >= a: " << (a >= a) << "\n";
 	cout << "\ta >= a / 2: " << (a >= a / 2) << "\n";
 	cout << "\ta >= a * 2: " << (a >= a * 2) << "\n";
+	
+	cout << "Operator << overload check, cout << a << \" GG \\n\":\n";
+	cout << a << " GG \n";
+	
+	cout << "Operator >> overload check, cin >> new_vect (DIMENSION = 4):\n";
+	Vector new_vect(4);
+	std::cin >> new_vect;
+	cout << new_vect << "\n";
 	
 	std::cin >> tmp;
 	
