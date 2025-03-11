@@ -73,10 +73,14 @@ int main() {
 	Vector multiply_a = a * 228;
 	multiply_a.print();
 	
+	cout << "Multiply a to 228 from left:\n";
+	Vector multiply_a_from_left = 228 * a;
+	multiply_a_from_left.print();
+
 	cout << "Divide a to 1.5:\n";
 	Vector divide_a = a / 1.5;
 	divide_a.print();
-	
+
 	cout << "Scalar multiplication of a and b:\n";
 	double scalar_multiplication_ab = Vector::scalar_multiply(a, b);
 	cout << scalar_multiplication_ab << "\n";
@@ -102,7 +106,7 @@ int main() {
 	Matrix operator_multiply_xy = x * y * y;
 	operator_multiply_xy.print();
 	
-	cout << "Operator * overload with scalar check, x * 5 * 2 * 42:\n";
+	cout << "Operator * overload with scalar check, 5 * x * 2 * 42:\n";
 	Matrix operator_multiply_x = x * 5 * 2 * 42;
 	operator_multiply_x.print();
 	

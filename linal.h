@@ -461,6 +461,13 @@ public:
 	
 };
 
+// 
+// Overloading operators, that cannot be overloaded inside of Matrix
+// 
+Matrix operator * (double value, const Matrix& right) {
+	return Matrix::multiply(right, value);
+}
+
 // Overloading some std functions for Matrix
 std::ostream& operator<<(std::ostream& os, const Matrix& matrix) {
 	for (unsigned int i = 0; i < matrix.getHeight(); i++) {
@@ -709,6 +716,13 @@ public:
 	}
 	
 };
+
+// 
+// Overloading operators, that cannot be overloaded inside of Vector
+//
+Vector operator * (double value, const Vector& right) {
+	return Vector::multiply(right, value);
+}
 
 // Overloading some std functions for Vector
 std::ostream& operator<<(std::ostream& os, const Vector& vector) {
