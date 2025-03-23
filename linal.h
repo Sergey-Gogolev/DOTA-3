@@ -605,6 +605,7 @@ public:
 	// 
 	// Operators overloading
 	// 
+	// Algebraic operators overloading 
 	Vector& operator = (const Vector& right) {
 		
 		// Check self-assignment
@@ -633,7 +634,6 @@ public:
 		}
 		return *this;
 	}
-	
 	Vector& operator += (const Vector& right) {
 		
 		// Basic checks
@@ -648,7 +648,6 @@ public:
 		}
 		return *this;
 	}
-	
 	Vector& operator -= (const Vector& right) {
 		
 		// Basic checks
@@ -663,7 +662,6 @@ public:
 		}
 		return *this;
 	}
-	
 	Vector operator + (const Vector& right) {
 		return Vector::sum(*this, right);
 	}
@@ -690,6 +688,7 @@ public:
 		return !((*this) == right);
 	}
 	
+	// Comparsion operators overloading
 	bool operator < (const Vector& right) const {
 		if (this->getModule() < right.getModule() - DOUBLE_THRESHOLD) {
 			return true;
@@ -709,6 +708,19 @@ public:
 		return !((*this) < right);
 	}
 	
+	// Access operators overloading
+	double& operator [] (unsigned int index) {
+		if (index >= dimension) {
+			throw std::invalid_argument("Array index exceeds boundaries of Vector");
+		}
+		return data[index][0];
+	}
+	const double& operator [] (unsigned int index) const {
+		if (index >= dimension) {
+			throw std::invalid_argument("Array index exceeds boundaries of Vector");
+		}
+		return data[index][0];
+	}
 };
 
 // 

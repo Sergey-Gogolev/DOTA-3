@@ -202,6 +202,13 @@ int main() {
 	cout << "\ta >= a / 2: " << (a >= a / 2) << "\n";
 	cout << "\ta >= a * 2: " << (a >= a * 2) << "\n";
 	
+	cout << "Operator [] overload check, cout << a[1] << \"\\n\":\n";
+	cout << a[1] << "\n";
+	
+	cout << "Operator [] overload check, a[2] = 2.28:\n";
+	a[2] = 2.28;
+	cout << a << "\n";
+	
 	cout << "Operator << overload check, cout << a << \" GG \\n\":\n";
 	cout << a << " GG \n";
 	
@@ -232,5 +239,6 @@ int main() {
 	}
 	delete[] array_vector;
 	
+
 	return 0;
 }
