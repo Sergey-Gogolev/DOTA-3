@@ -1,8 +1,11 @@
 #include<iostream>
-#include "linal.h"
+#include<vector>
+#include<cmath>
 
 using std::cout;
 using std::endl;
+
+#include "linal.h"
 
 
 int main() {
@@ -228,41 +231,6 @@ int main() {
 		delete array_vector[i];
 	}
 	delete[] array_vector;
-	
-	cout << " --- Dekart System Part --- \n";
-	cout << "Dekart System init dek_sys_x check:\n";
-	Dekart_System dek_sys_x = Dekart_System();
-	dek_sys_x.print();
-	
-	cout << "Dekart System changeBaseDot() and changeBasis() check:\n";
-	Dekart_System dek_sys_y = Dekart_System();
-	dek_sys_y.print();
-	dek_sys_y.changeBaseDot( Vector(3, (double[]){ 2, 2, 8 }));
-	
-	Vector** y_basis = new Vector*[3];
-	y_basis[0] = new Vector(3, (double[]){ 0, 0, 1 });
-	y_basis[1] = new Vector(3, (double[]){ 1, 0, 0 });
-	y_basis[2] = new Vector(3, (double[]){ 0, 1, 0 });
-	
-	dek_sys_y.changeBasis(y_basis);
-	
-	for (unsigned int i = 0; i < 3; i++) {
-		delete y_basis[i];
-	}
-	delete[] y_basis;
-	
-	dek_sys_y.print();
-	
-	cout << "Vectors adding check:\n";
-	unsigned int length_needed_vectors = 42;
-	for (unsigned int i = 0; i < length_needed_vectors; i++) {
-		dek_sys_x.addVector( Vector(3, (double[]){ 3, 2, 8 }) );
-	}
-	dek_sys_x.printVectors();
-	
-	cout << "Dekart System switch check, dek_sys_x ---> dek_sys_y:\n";
-	dek_sys_x.switchSystem(dek_sys_y);
-	dek_sys_x.print();
 	
 	return 0;
 }

@@ -1,10 +1,4 @@
-#include<iostream>
-#include<vector>
-#include<cmath>
-using std::cout;
-
 #define DOUBLE_THRESHOLD 0.000001
-
 
 class Matrix {
 
@@ -32,7 +26,7 @@ public:
 		clear();
 	}
 	
-	// Clone Matrix initialisation (Initialise Matrix identical to "root_matrix")
+	// Clone Matrix initialisation (Initialise Matrix identical to "root_matrix") (COPY CONSTRUCTOR)
 	Matrix(const Matrix& root_matrix) {
 		this->height = root_matrix.height;
 		this->width = root_matrix.width;
@@ -152,7 +146,7 @@ public:
 		return result;
 	}
 	
-	// Get minor Matrix ( Matrix with excluded elements which vertical_index or horisontal_index matches with given )
+	// Get minor Matrix ( Matrix with excluded elements which vertical_index or horisontal_index matches are given )
 	Matrix getMinor(unsigned int vertical_index, unsigned int horisontal_index) const {
 		
 		Matrix result = Matrix(this->height - 1, this->width - 1);
@@ -200,7 +194,7 @@ public:
 		return determinant;
 	}
 	
-	// Get adjugate Matrix ( Matrix, that is made from algebraic adjugation of each element (and transppositioned))
+	// Get adjugate Matrix ( Matrix, that is made from algebraic adjugation of each element (and transpositioned))
 	Matrix getAdjugated() const {
 		
 		// Transpositioning base Matrix
@@ -345,7 +339,7 @@ public:
 		return result;
 	}
 	
-	// Get multiplication of Matrix and scalar
+	// Get division of Matrix and scalar
 	static Matrix divide(const Matrix& a, double b) {
 		
 		if (b == 0) {
@@ -524,7 +518,7 @@ public:
 		}
 	}
 	
-	// Initialisation clone of Vector "vector"
+	// Initialisation clone of Vector "vector" (COPY CONSTRUCTOR)
 	Vector(const Vector& vector) : Matrix(vector) {
 		this->dimension = vector.getDimension();
 	}
@@ -547,7 +541,7 @@ public:
 		return result;
 	}
 	
-	// Get subtract of two Vectors
+	// Get subtraction of two Vectors
 	static Vector subtract(const Vector& a, const Vector& b) {
 		
 		double* needed_elements = (Matrix::subtract(a, b)).getElements();
@@ -742,200 +736,3 @@ std::istream& operator>>(std::istream &is, Vector& vector) {
 	}
 	return is;
 }
-
-
-// 3-dimensional Decart Ortogonal System of Coordinates
-class Dekart_System {
-
-protected: 
-	Vector* base_dot;
-	Vector** basis;
-	std::vector<Vector> vectors;
-
-public: 
-	// Check if vectors will make basis (non-linear dependent) or not (linear-dependent)
-	static bool isBasis(Vector const* const* const needed_to_check) {
-		
-		Matrix tmp_matrix = Matrix(3, 3);
-		for (unsigned int i = 0; i < 3; i++) {
-			for (unsigned int j = 0; j < 3; j++) {
-				tmp_matrix.changeElement(i, j, needed_to_check[j]->getElement(i, 0) );
-			}
-		}
-		return (tmp_matrix.getDeterminant() != 0);
-	}
-	
-	// Initialisation of default Dekart System of Coordinates
-	Dekart_System() {
-		base_dot = new Vector(3, (double[]){ 0, 0, 0 });
-		basis = new Vector*[3];
-		basis[0] = new Vector(3, (double[]){ 1, 0, 0 });
-		basis[1] = new Vector(3, (double[]){ 0, 1, 0 });
-		basis[2] = new Vector(3, (double[]){ 0, 0, 1 });
-	}
-	
-	// Initialisation clone Dekart_System but without it's vectors
-	Dekart_System(const Dekart_System& needed_dek_sys) {
-		base_dot = new Vector(*needed_dek_sys.base_dot);
-		basis = new Vector*[3];
-		basis[0] = new Vector(*needed_dek_sys.basis[0]);
-		basis[1] = new Vector(*needed_dek_sys.basis[1]);
-		basis[2] = new Vector(*needed_dek_sys.basis[2]);
-	}
-	
-	// Initialisation of Dekart_System with given base_dot and basis
-	Dekart_System(const Vector& needed_base_dot, Vector const* const* const needed_basis) {
-		
-		if (not Dekart_System::isBasis(needed_basis)) {
-			throw std::invalid_argument("Attempt to make linear-dependent basis, terminating...");
-		}
-		
-		base_dot = new Vector(needed_base_dot);
-		basis = new Vector*[3];
-		basis[0] = new Vector(*needed_basis[0]);
-		basis[1] = new Vector(*needed_basis[1]);
-		basis[2] = new Vector(*needed_basis[2]);
-	}
-	
-	// Obviously destructor of Dekart System of Coordinates
-	~Dekart_System() {
-		delete base_dot;
-		for (unsigned int i = 0; i < 3; i++) {
-			delete basis[i];
-		}
-		delete[] basis;
-	}
-	
-	// Print all Vectors in Dekart_System
-	void printVectors() const {
-		for (unsigned int i = 0; i < vectors.size(); i++) {
-			cout << "Vector " << i << ":\n";
-			vectors[i].print();
-		}
-	}
-	
-	// Print coords of base_dot and basis Vectors of current Dekart System of Coordinates
-	void print() const {
-		cout << "Base_dot: \n";
-		base_dot->print();
-		
-		cout << "Basis x: \n";
-		basis[0]->print();
-		cout << "Basis y: \n";
-		basis[1]->print();
-		cout << "Basis z: \n";
-		basis[2]->print();
-		printVectors();
-	}
-	
-	// Get copy of Base_dot
-	Vector getBaseDot() const {
-		return Vector(*this->base_dot);
-	}
-	
-	// Get Basis as Vector** massiv of Vectors
-	Vector** getBasis() const {
-		Vector** result = new Vector*[3];
-		for (unsigned int i = 0; i < 3; i++) {
-			result[i] = new Vector(*this->basis[i]);
-		}
-		return result;
-	}
-	
-	// Get Vector
-	Vector getVector(unsigned int given_index) const {
-		if (given_index >= vectors.size()) {
-			throw std::invalid_argument("Error: index is bigger than number of vectors, terminating...");
-		}
-		return vectors[given_index];
-	}
-	
-	// Get number of Vectors in "vectors"
-	unsigned int getNumberOfVectors() const {
-		return vectors.size();
-	}
-	
-	// Add Vector to Dekart_System
-	void addVector(const Vector& newVector) {
-		vectors.push_back(newVector);
-	}
-	
-	// Change Vector to needed in "vectors"
-	void changeVector(unsigned int index, const Vector& needed_vector) {
-		vectors[index] = needed_vector;
-	}
-	
-	// Delete Vector from "vectors"
-	void removeVector(unsigned int index) {
-		if (index >= vectors.size()) {
-			throw std::invalid_argument("Error: index is bigger than number of vectors, terminating...");
-		}
-		vectors.erase(vectors.begin() + index);
-	}
-	
-	// 
-	// Get Basis Transformation Matrix
-	// !! It gives capability to get OLD coords from NEW coords !!
-	// If you want to get more native Transformation Matrix, use "getTransformationMatrix_native()"
-	// 
-	Matrix getTransformationMatrix(const Dekart_System& b) const {
-		
-		// Matrixes that represent both Basis coords
-		Matrix a_support_trans_matrix = Matrix(3, 3);
-		Matrix b_support_trans_matrix = Matrix(3, 3);
-		
-		for (unsigned int i = 0; i < 3; i++) {
-			for (unsigned int j = 0; j < 3; j++) {
-				a_support_trans_matrix.changeElement(i, j, this->basis[j]->getElement(i, 0));
-				b_support_trans_matrix.changeElement(i, j, b.basis[j]->getElement(i, 0));
-			}
-		}
-		return Matrix::multiply(a_support_trans_matrix.getInverted(), b_support_trans_matrix);
-	}
-	
-	// 
-	// Get Basis Transformation Matrix
-	// This one gives capability to get NEW coords from OLD coords, which native (I hope it is)
-	// 
-	Matrix getTransformationMatrix_native(const Dekart_System& b) const {
-		return (this->getTransformationMatrix(b)).getInverted();
-	}
-	
-	// Switch current Dekart System of Coordinates to "new_dk_sys" and change all Vectors in "vectors"
-	void switchSystem(const Dekart_System& new_dk_sys) {
-		
-		Matrix needed_native_transform_matrix = this->getTransformationMatrix_native(new_dk_sys);
-		// vectors[i] = TRANS_NATIVE * (OLD_COORDS - NEW_BASE_DOT)
-		for (unsigned int i = 0; i < vectors.size(); i++) {
-			vectors[i] = Vector( needed_native_transform_matrix * ((vectors[i] - (*new_dk_sys.base_dot)).getMatrix()) );
-		}
-		// Final switches
-		delete base_dot;
-		for (unsigned int i = 0; i < 3; i++) {
-			delete basis[i];
-		}
-		
-		this->base_dot = new Vector(*new_dk_sys.base_dot);
-		this->basis[0] = new Vector(*new_dk_sys.basis[0]);
-		this->basis[1] = new Vector(*new_dk_sys.basis[1]);
-		this->basis[2] = new Vector(*new_dk_sys.basis[2]);
-	}
-	
-	// Change base_dot to "new_base_dot"
-	void changeBaseDot(const Vector& new_base_dot) {
-		
-		Dekart_System tmp_dek_sys = Dekart_System(*this);
-		delete tmp_dek_sys.base_dot;
-		tmp_dek_sys.base_dot = new Vector(new_base_dot);
-		
-		this->switchSystem(tmp_dek_sys);
-	}
-	
-	// Change basis with given
-	void changeBasis(Vector const* const* const new_basis) {
-		
-		Dekart_System tmp_dek_sys = Dekart_System( Vector(3, (double[]){0, 0, 0}), new_basis);
-		this->switchSystem(tmp_dek_sys);
-	}
-	
-};
