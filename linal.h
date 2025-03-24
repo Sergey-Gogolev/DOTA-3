@@ -262,61 +262,61 @@ public:
 		}
 	}
 	
-	// Get sum of two matrix
-	static Matrix sum(const Matrix& a, const Matrix& b) {
+	// Get sum with matrix
+	Matrix getSum(const Matrix& b) const {
 		
 		// Basic checks
-		if (a.height != b.height || a.width != b.width) {
+		if (this->height != b.height || this->width != b.width) {
 			throw std::invalid_argument("summing wrong sizes matrix");
 		}
 		
 		// Taking width and height of Matrix "a"
-		Matrix result = Matrix(a.height, a.width);
+		Matrix result = Matrix(this->height, this->width);
 		
-		for (unsigned int i = 0; i < a.height; i++) {
-			for (unsigned int j = 0; j < a.width; j++) {
-				result.data[i][j] = a.data[i][j] + b.data[i][j];
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				result.data[i][j] = this->data[i][j] + b.data[i][j];
 			}
 		}
 		return result;
 	}
 	
 	// Get subtraction of two matrix
-	static Matrix subtract(const Matrix& a, const Matrix& b) {
+	Matrix getSubtraction(const Matrix& b) const {
 		
 		// Basic checks
-		if (a.height != b.height || a.width != b.width) {
+		if (this->height != b.height || this->width != b.width) {
 			throw std::invalid_argument("subtracting wrong sizes matrix");
 		}
 		
 		// Taking width and height of Matrix "a"
-		Matrix result = Matrix(a.height, a.width);
+		Matrix result = Matrix(this->height, this->width);
 		
-		for (unsigned int i = 0; i < a.height; i++) {
-			for (unsigned int j = 0; j < a.width; j++) {
-				result.data[i][j] = a.data[i][j] - b.data[i][j];
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				result.data[i][j] = this->data[i][j] - b.data[i][j];
 			}
 		}
 		return result;
 	}
 	
 	// Get multiplication of two Matrix
-	static Matrix multiply(const Matrix& a, const Matrix& b) {
+	Matrix getMultiplication(const Matrix& b) const {
 		
 		// Basic checks
-		if (a.width != b.height) {
+		if (this->width != b.height) {
 			throw std::invalid_argument("multiplying matrix wrong sizes matrix");
 		}
 		
 		// Taking height of Matrix "a" and width of Matrix "b"
-		Matrix result = Matrix(a.height, b.width);
+		Matrix result = Matrix(this->height, b.width);
 		
 		double tmp_value;
-		for (unsigned int i = 0; i < a.height; i++) {
+		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < b.width; j++) {
 				tmp_value = 0;
-				for (unsigned int k = 0; k < a.width; k++) {
-					tmp_value += a.data[i][k] * b.data[k][j];
+				for (unsigned int k = 0; k < this->width; k++) {
+					tmp_value += this->data[i][k] * b.data[k][j];
 				}
 				result.data[i][j] = tmp_value;
 			}
@@ -325,14 +325,14 @@ public:
 	}
 	
 	// Get multiplication of Matrix and scalar
-	static Matrix multiply(const Matrix& a, double b) {
+	Matrix getMultiplication(double b) const {
 		
 		// Taking height of Matrix "a" and width of Matrix "a"
-		Matrix result = Matrix(a.height, a.width);
+		Matrix result = Matrix(this->height, this->width);
 		
-		for (unsigned int i = 0; i < a.height; i++) {
-			for (unsigned int j = 0; j < a.width; j++) {
-				result.data[i][j] = a.data[i][j] * b;
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				result.data[i][j] = this->data[i][j] * b;
 			}
 		}
 		
@@ -340,18 +340,18 @@ public:
 	}
 	
 	// Get division of Matrix and scalar
-	static Matrix divide(const Matrix& a, double b) {
+	Matrix getDivision(double b) const {
 		
 		if (b == 0) {
 			throw std::invalid_argument("dividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)");
 		}
 		
 		// Taking height of Matrix "a" and width of Matrix "a"
-		Matrix result = Matrix(a.height, a.width);
+		Matrix result = Matrix(this->height, this->width);
 		
-		for (unsigned int i = 0; i < a.height; i++) {
-			for (unsigned int j = 0; j < a.width; j++) {
-				result.data[i][j] = a.data[i][j] / b;
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				result.data[i][j] = this->data[i][j] / b;
 			}
 		}
 		
@@ -418,20 +418,20 @@ public:
 		return *this;
 	}
 	
-	Matrix operator + (const Matrix& right) {
-		return Matrix::sum(*this, right);
+	Matrix operator + (const Matrix& right) const {
+		return this->getSum(right);
 	}
-	Matrix operator - (const Matrix& right) {
-		return Matrix::subtract(*this, right);
+	Matrix operator - (const Matrix& right) const {
+		return this->getSubtraction(right);
 	}
-	Matrix operator * (const Matrix& right) {
-		return Matrix::multiply(*this, right); 
+	Matrix operator * (const Matrix& right) const {
+		return this->getMultiplication(right); 
 	}
-	Matrix operator * (double value) {
-		return Matrix::multiply(*this, value);
+	Matrix operator * (double value) const {
+		return this->getMultiplication(value);
 	}
-	Matrix operator / (double value) {
-		return Matrix::divide(*this, value);
+	Matrix operator / (double value) const {
+		return this->getDivision(value);
 	}
 	
 	bool operator == (const Matrix& right) const {
@@ -459,7 +459,7 @@ public:
 // Overloading operators, that cannot be overloaded inside of Matrix
 // 
 Matrix operator * (double value, const Matrix& right) {
-	return Matrix::multiply(right, value);
+	return right.getMultiplication(value);
 }
 
 // Overloading some std functions for Matrix
@@ -528,53 +528,33 @@ public:
 	
 	// Get module/length of the Vector !WORKS ONLY IN ORTOGONAL DEKART_SYSTEM OF COORDINAT!
 	double getModule() const {
-		return sqrt(scalar_multiply(*this, *this));
+		return sqrt(this->get_scalar_multiplication(*this));
 	}
 	
 	// Get sum of two Vectors
-	static Vector sum(const Vector& a, const Vector& b) {
-		
-		double* needed_elements = (Matrix::sum(a, b)).getElements();
-		Vector result = Vector(a.dimension, needed_elements);
-		
-		delete[] needed_elements;
-		return result;
+	Vector getSum(const Vector& b) const {
+		return Vector(this->getMatrix() + b.getMatrix());
 	}
 	
 	// Get subtraction of two Vectors
-	static Vector subtract(const Vector& a, const Vector& b) {
-		
-		double* needed_elements = (Matrix::subtract(a, b)).getElements();
-		Vector result = Vector(a.dimension, needed_elements);
-		
-		delete[] needed_elements;
-		return result;
+	Vector getSubtraction(const Vector& b) const {
+		return Vector(this->getMatrix() - b.getMatrix());
 	}
 	
 	// Get multiplication of Vector and scalar
-	static Vector multiply(const Vector& a, double value) {
-		
-		double* needed_elements = (Matrix::multiply(a, value)).getElements();
-		Vector result = Vector(a.dimension, needed_elements);
-		
-		delete[] needed_elements;
-		return result;
+	Vector getMultiplication(double value) const {
+		return Vector(this->getMatrix() * value);	
 	}
 		
 	// Get division of Vector and scalar
-	static Vector divide(const Vector& a, double value) {
-		
-		double* needed_elements = (Matrix::divide(a, value)).getElements();
-		Vector result = Vector(a.dimension, needed_elements);
-		
-		delete[] needed_elements;
-		return result;
+	Vector getDivision(double value) const {
+		return Vector(this->getMatrix() / value);	
 	}
 	
-	// Return result of scalar multiplication of two Vectors !WORKS ONLY IN ORTOGONAL DEKART_SYSTEM OF COORDINAT!
-	static double scalar_multiply(const Vector& a, const Vector& b) {
+	// Return result of scalar multiplication of this Vector to another !WORKS ONLY IN ORTOGONAL DEKART_SYSTEM OF COORDINAT!
+	double get_scalar_multiplication(const Vector& b) const {
 		
-		Matrix needed_coords_matrix = Matrix::multiply(a.getTranspositioned(), b);
+		Matrix needed_coords_matrix = this->getTranspositioned() * b.getMatrix();
 		double* needed_elements = needed_coords_matrix.getElements();
 		double result = needed_elements[0];
 		
@@ -582,10 +562,10 @@ public:
 		return result;
 	}
 	
-	// Return result of vector multiplication of two Vectors, !WORKS ONLY ON 3-DIMENSIONAL VECTORS!
-	static Vector vector_multiply(const Vector& a, const Vector& b) {
+	// Return result of vector multiplication of this Vector to another !WORKS ONLY ON 3-DIMENSIONAL VECTORS!
+	Vector get_vector_multiplication(const Vector& b) const {
 		
-		double* a_coords = a.getElements();
+		double* a_coords = this->getElements();
 		double* b_coords = b.getElements();
 		
 		// Equation from Wikipedia
@@ -662,20 +642,20 @@ public:
 		}
 		return *this;
 	}
-	Vector operator + (const Vector& right) {
-		return Vector::sum(*this, right);
+	Vector operator + (const Vector& right) const {
+		return this->getSum(right);
 	}
 	
-	Vector operator - (const Vector& right) {
-		return Vector::subtract(*this, right);
+	Vector operator - (const Vector& right) const {
+		return this->getSubtraction(right);
 	}
 	
-	Vector operator * (double value) {
-		return Vector::multiply(*this, value);
+	Vector operator * (double value) const {
+		return this->getMultiplication(value);
 	}
 	
-	Vector operator / (double value) {
-		return Vector::divide(*this, value);
+	Vector operator / (double value) const {
+		return this->getDivision(value);
 	}
 	
 	bool operator == (const Vector& right) const {
@@ -727,7 +707,7 @@ public:
 // Overloading operators, that cannot be overloaded inside of Vector
 //
 Vector operator * (double value, const Vector& right) {
-	return Vector::multiply(right, value);
+	return right.getMultiplication(value);
 }
 
 // Overloading some std functions for Vector

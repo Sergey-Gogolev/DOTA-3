@@ -44,11 +44,11 @@ int main() {
 	adjugated_x.print();
 	
 	cout << "Get sum of x and y:\n";
-	Matrix sum_xy = Matrix::sum(x, y);
+	Matrix sum_xy = x.getSum(y);
 	sum_xy.print();
 	
 	cout << "Get multiplication of x and y:\n";
-	Matrix multiplication_xy = Matrix::multiply(x, y);
+	Matrix multiplication_xy = x.getMultiplication(y);
 	multiplication_xy.print();
 	
 	cout << " --- Vector Part --- \n";
@@ -65,11 +65,11 @@ int main() {
 	b.print();
 	
 	cout << "Sum a and b:\n";
-	Vector sum_ab = Vector::sum(a, b);
+	Vector sum_ab = a.getSum(b);
 	sum_ab.print();
 	
 	cout << "Subtract a and b:\n";
-	Vector subtract_ab = Vector::subtract(a, b);
+	Vector subtract_ab = a.getSubtraction(b);
 	subtract_ab.print();
 	
 	cout << "Multiply a to 228:\n";
@@ -85,11 +85,11 @@ int main() {
 	divide_a.print();
 
 	cout << "Scalar multiplication of a and b:\n";
-	double scalar_multiplication_ab = Vector::scalar_multiply(a, b);
+	double scalar_multiplication_ab = a.get_scalar_multiplication(b);
 	cout << scalar_multiplication_ab << "\n";
 	
 	cout << "Vector multiplication of a and b:\n";
-	Vector vector_multiplication_ab = Vector::vector_multiply(a, b);
+	Vector vector_multiplication_ab = b.get_vector_multiplication(b);
 	vector_multiplication_ab.print();
 	
 	cout << "Get module of the Vector a:\n";
