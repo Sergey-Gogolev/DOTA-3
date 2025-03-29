@@ -1,11 +1,11 @@
+#include "linal.h"
+
+#include<cmath>
 #include<iostream>
 #include<vector>
-#include<cmath>
 
 using std::cout;
 using std::endl;
-
-#include "linal.h"
 
 #define PI 3.1415926535897932384626433
 
