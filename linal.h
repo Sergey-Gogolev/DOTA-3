@@ -175,7 +175,7 @@ public:
 	double getDeterminant() const {
 		
 		if (this->height != this->width) {
-			throw std::invalid_argument("determinant doesn't exist, not square matrix.");
+			throw std::invalid_argument("determinant doesn't exist, not square Matrix.");
 		}
 		
 		// if there's only one element in Matrix
@@ -236,7 +236,7 @@ public:
 	// Get inverted Matrix
 	Matrix getInverted() const {
 		if (this->getDeterminant() == 0) {
-			throw std::invalid_argument("determinant 0, inverted matrix doesn't exist");
+			throw std::invalid_argument("determinant 0, inverted Matrix doesn't exist");
 		}
 	    return  this->getAdjugated() / this->getDeterminant();
 	}
@@ -267,7 +267,7 @@ public:
 		
 		// Basic checks
 		if (this->height != b.height || this->width != b.width) {
-			throw std::invalid_argument("summing wrong sizes matrix");
+			throw std::invalid_argument("summing wrong sizes Matrix");
 		}
 		
 		// Taking width and height of Matrix "a"
@@ -286,7 +286,7 @@ public:
 		
 		// Basic checks
 		if (this->height != b.height || this->width != b.width) {
-			throw std::invalid_argument("subtracting wrong sizes matrix");
+			throw std::invalid_argument("subtracting wrong sizes Matrix");
 		}
 		
 		// Taking width and height of Matrix "a"
@@ -305,7 +305,7 @@ public:
 		
 		// Basic checks
 		if (this->width != b.height) {
-			throw std::invalid_argument("multiplying matrix wrong sizes matrix");
+			throw std::invalid_argument("multiplying Matrix wrong sizes Matrix");
 		}
 		
 		// Taking height of Matrix "a" and width of Matrix "b"
@@ -393,7 +393,7 @@ public:
 		
 		// Basic checks
 		if (this->height != right.height || this->width != right.width) {
-			throw std::invalid_argument("+= wrong sizes matrix");
+			throw std::invalid_argument("+= wrong sizes Matrix");
 		}
 		
 		for (unsigned int i = 0; i < this->height; i++) {
@@ -407,7 +407,7 @@ public:
 		
 		// Basic checks
 		if (this->height != right.height || this->width != right.width) {
-			throw std::invalid_argument("-= wrong sizes matrix");
+			throw std::invalid_argument("-= wrong sizes Matrix");
 		}
 		
 		for (unsigned int i = 0; i < this->height; i++) {
@@ -415,6 +415,36 @@ public:
 				this->data[i][j] -= right.data[i][j];
 			}
 		}
+
+		return *this;
+	}
+	Matrix& operator *= (const Matrix& right) {
+		
+		// Basic checks
+		if (this->width != right.height) {
+			throw std::invalid_argument("*= wrong sizes Matrix");
+		}
+		
+		double** result_data = new double*[this->height];
+		
+		double tmp_value;
+		for (unsigned int i = 0; i < this->height; i++) {
+			result_data[i] = new double[right.width];
+			for (unsigned int j = 0; j < right.width; j++) {
+				tmp_value = 0;
+				for (unsigned int k = 0; k < this->width; k++) {
+					tmp_value += this->data[i][k] * right.data[k][j];
+				}
+				result_data[i][j] = tmp_value;
+			}
+		}
+		
+		for (unsigned int i = 0; i < this->height; i++) {
+			delete[] this->data[i];
+		}
+		delete[] this->data;
+		this->data = result_data;
+		this->width = right.width;
 		return *this;
 	}
 	
@@ -452,6 +482,19 @@ public:
 		return !((*this) == right);
 	}
 	
+	// Access operators overloading !!IS NOT MEMORY SAFE, BE EXTREMELY CAREFUL!!
+	double* operator [] (unsigned int index) {
+		if (index >= height) {
+			throw std::invalid_argument("Array index exceeds boundaries of Matrix");
+		}
+		return data[index];
+	}
+	double* operator [] (unsigned int index) const {
+		if (index >= height) {
+			throw std::invalid_argument("Array index exceeds boundaries of Matrix");
+		}
+		return data[index];
+	}
 	
 };
 
@@ -565,6 +608,10 @@ public:
 	// Return result of vector multiplication of this Vector to another !WORKS ONLY ON 3-DIMENSIONAL VECTORS!
 	Vector get_vector_multiplication(const Vector& b) const {
 		
+		if (dimension != 3) {
+			throw std::invalid_argument("Vector multiplication works only with 3 dimensional Vectors :/");
+		}
+
 		double* a_coords = this->getElements();
 		double* b_coords = b.getElements();
 		
@@ -582,6 +629,60 @@ public:
 		return result;
 	}
 	
+	// Get rotated Vector in 2 dimensions, angle in radians.
+	Vector getRotated(double needed_angle) const {
+		
+		if (dimension < 2) {
+			throw std::invalid_argument("Too few dimensions to perform 2d rotation");
+		}
+		Matrix rotate_matrix(dimension, dimension);
+		for (unsigned int i = 2; i < dimension; i++) {
+			rotate_matrix[i][i] = 1;
+		}
+
+		rotate_matrix[0][0] = std::cos(needed_angle);
+		rotate_matrix[0][1] = -std::sin(needed_angle);
+		rotate_matrix[1][0] = std::sin(needed_angle);
+		rotate_matrix[1][1] = std::cos(needed_angle);
+		
+		Vector result = Vector(rotate_matrix * this->getMatrix());
+		return result;
+	}
+	// Get rotated Vector in 3 dimensions, angle in radians, rotates by axis Z then axis Y
+	Vector getRotated(double needed_angle_z, double needed_angle_y) {
+		
+		if (dimension < 3) {
+			throw std::invalid_argument("Too few dimensions to perform 3d rotation");
+		}
+		Matrix rotate_matrix_z(dimension, dimension);
+		for (unsigned int i = 0; i < dimension; i++) {
+			rotate_matrix_z[i][i] = 1;
+		}
+		
+		rotate_matrix_z[0][0] = std::cos(needed_angle_z);
+		rotate_matrix_z[0][1] = -std::sin(needed_angle_z);
+		rotate_matrix_z[1][0] = std::sin(needed_angle_z);
+		rotate_matrix_z[1][1] = std::cos(needed_angle_z);
+		cout << "ROTATE_MATRIX_Z: \n" << rotate_matrix_z << '\n';
+
+		Matrix rotate_matrix(dimension, dimension);
+		for (unsigned int i = 0; i < dimension; i++) {
+			rotate_matrix[i][i] = 1;
+		}
+
+		rotate_matrix[0][0] = std::cos(needed_angle_y);
+		rotate_matrix[0][2] = std::sin(needed_angle_y);
+		rotate_matrix[2][0] = -std::sin(needed_angle_y);
+		rotate_matrix[2][2] = std::cos(needed_angle_y);
+		cout << "ROTATE_MATRIX_Y: \n" << rotate_matrix << '\n';
+
+		rotate_matrix *= rotate_matrix_z;
+		cout << "RESULT ROTATE MATRIX: \n" << rotate_matrix << '\n';
+		
+		Vector result = Vector(rotate_matrix * this->getMatrix());
+		return result;
+	}
+
 	// 
 	// Operators overloading
 	// 
@@ -618,7 +719,7 @@ public:
 		
 		// Basic checks
 		if (this->height != right.height) {
-			throw std::invalid_argument("+= wrong sizes vectors");
+			throw std::invalid_argument("+= wrong sizes Vectors");
 		}
 		
 		for (unsigned int i = 0; i < this->height; i++) {
@@ -632,7 +733,7 @@ public:
 		
 		// Basic checks
 		if (this->height != right.height) {
-			throw std::invalid_argument("-= wrong sizes vectors");
+			throw std::invalid_argument("-= wrong sizes Vectors");
 		}
 		
 		for (unsigned int i = 0; i < this->height; i++) {

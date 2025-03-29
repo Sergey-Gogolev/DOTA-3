@@ -7,6 +7,7 @@ using std::endl;
 
 #include "linal.h"
 
+#define PI 3.1415926535897932384626433
 
 int main() {
 	std::cout << std::boolalpha;
@@ -96,6 +97,12 @@ int main() {
 	double module_a = a.getModule();
 	cout << "Module: " << module_a << "\n";
 	
+	cout << "Get rotated on pi Vector of Vector a:\n";
+	cout << a.getRotated(PI) << '\n';
+	
+	cout << "Get rotated on pi / 2 by Z, and pi / 2 by Y:\n";
+	cout << a.getRotated(PI / 2, PI / 2) << '\n';
+	
 	cout << " --- Advanced Matrix Part --- \n";
 	cout << "Operator + overload with matrix check, x + y + y:\n";
 	Matrix operator_sum_xy = x + y + y;
@@ -143,6 +150,13 @@ int main() {
 	
 	cout << "Operator << overload check, cout << x << \" GG \\n\":\n";
 	cout << x  << " GG \n"<< "\n";
+	
+	cout << "Operator [] overload check, cout << x[1][2] << \'\\n\':\n";
+	cout << x[1][2] << '\n';
+	
+	cout << "Operator [] overload check, x[1][2] = -0.54:\n";
+	x[1][2] = -0.54;
+	cout << x << '\n';
 	
 	std::cin >> tmp;
 	
