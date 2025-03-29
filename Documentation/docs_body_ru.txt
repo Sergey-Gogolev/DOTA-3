@@ -1,0 +1,33 @@
+Документация класса Body
+
+	Поля (переменные):
+		protected:
+		* Vector position --- вектор координат
+		* Vector velosity --- вектор скорости
+		* Vector acceleration --- вектор ускорения
+		* sf::CircleShape circle --- текстура кружка
+		* bool EnableHitbox --- хитбокс вкл/выкл
+
+	Конструкторы:
+		* Body(Vector pos, Vector vel, Vector acs)
+		* Body() - нулевые векторы в 2-мерном пространстве
+		Изначально стоит дефолтный кружок и включенный хитбокс
+
+	Методы:
+		* void SetPos(const Vector& pos) --- задать вектор координат
+   		* void SetVel(const Vector& vel) --- задать вектор скорости
+		* void SetAcs(const Vector& acs) --- задать вектор усорения
+
+		* Vector GetPos() const --- возвращает вектор координат
+		* Vector GetVel() const --- возвращает вектор скорости
+		* Vector GetAcs() const --- возвращает вектор ускорения
+
+		* void CalcMove (const double dt) --- обновляет векторы координат и скорости по ФТ
+		* void AddPos(const Vector dpos) --- прибавляет Vector dpos к вектору координат
+		* AddVel(const Vector dvel) --- прибавляет Vector dvel к вектору скорости
+		* void AddAcs(const Vector dacs) --- прибавляет Vector dacs к вектору ускорения
+
+		* void SetCircle(const unsigned int R, const unsigned int OT, const sf::Color FC, const sf::Color OC, const unsigned int PC)  --- установить параметры кружка: радиус R px, контур OT px, цвет заливки FC, цвет контура OC, кол-во граней PC
+		* Draw(int w, int h, double scale, sf::RenderWindow* app) --- отрисовка тела в окне w x h, масштаб scale, окно *app
+
+		* void SetTexture(const sf::Texture* texture) --- задать текстуру кружка
