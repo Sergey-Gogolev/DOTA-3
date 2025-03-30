@@ -32,17 +32,17 @@ public:
 
     ////////////////////////
 
-    void SetPos(const Vector& pos)
+    virtual void SetPos(const Vector& pos)
     {
         position = pos;
     }
 
-    void SetVel(const Vector& vel)
+    virtual void SetVel(const Vector& vel)
     {
         velosity = vel;
     }
 
-    void SetAcs(const Vector& acs)
+    virtual void SetAcs(const Vector& acs)
     {
         acceleration = acs;
     }
@@ -66,23 +66,23 @@ public:
 
     ////////////////////////
 
-    void CalcMove (const double dt)
+    virtual void CalcMove (const double dt)
     {
         position += velosity * dt + 0.5 * acceleration * dt * dt;
         velosity += acceleration * dt;
     }
 
-    void AddPos(const Vector dpos)
+    virtual void AddPos(const Vector dpos)
     {
         position += position;
     }
 
-    void AddVel(const Vector dvel)
+    virtual void AddVel(const Vector dvel)
     {
         velosity += dvel;
     }
 
-    void AddAcs(const Vector dacs)
+    virtual void AddAcs(const Vector dacs)
     {
         acceleration += dacs;
     }
