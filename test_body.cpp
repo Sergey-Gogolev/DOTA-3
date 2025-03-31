@@ -1,6 +1,3 @@
-#include <iostream>
-#include <cmath>
-#include <SFML/Graphics.hpp>
 #include "class_body.h"
 
 int main()
@@ -18,9 +15,10 @@ int main()
 
     sf::RenderWindow app(sf::VideoMode(800, 600), "SFML window");
 
-
+    unsigned int i = 0;
     while (app.isOpen())
     {
+        i ++;
         sf::Event event;
         while (app.pollEvent(event))
         {
@@ -34,6 +32,7 @@ int main()
         //Вызываем методы отрисовки для всех
         chel1.Draw(800,600,1,&app);
         chel2.Draw(800,600,1,&app);
+
         // Заставляем окно обновиться и нарисовать всё
         app.display();
     }
