@@ -544,11 +544,7 @@ public:
 	
 	// Get Matrix that represents Vector
 	Matrix getMatrix() const {
-		Matrix result = Matrix(this->dimension, 1);
-		for (unsigned int i = 0; i < dimension; i++) {
-			result.changeElement(i, 0, this->data[i][0]);
-		}
-		return result;
+		return Matrix(*this);
 	}
 	
 	// Initialisation of Vector with "coords = 0" and dimension "dimension"
