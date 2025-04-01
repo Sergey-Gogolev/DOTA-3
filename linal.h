@@ -4,52 +4,72 @@
 #include <cmath>
 #include <iostream>
 
+#ifndef FLOAT_THRESHOLD
+#define FLOAT_THRESHOLD 0.0001
+#endif
+
 #ifndef DOUBLE_THRESHOLD
 #define DOUBLE_THRESHOLD 0.000001
 #endif
 
-class Matrix {
+template<typename T = double> class Matrix {
 
 protected: 
 	unsigned int width; // number of columns
 	unsigned int height; // number of rows
-	double** data;
+	T** data;
 
 public: 
-	// Fill Matrix with zeros
-	void clear() {
-		this->data = new double*[this->height];
+	// Fill Matrix with default_value
+	void clear(T default_value) {
+		this->data = new T*[this->height];
 		for (unsigned int i = 0; i < this->height; i++) {
-			this->data[i] = new double[this->width];
+			this->data[i] = new T[this->width];
 			for (unsigned int j = 0; j < this->width; j++) {
-				this->data[i][j] = 0;
+				this->data[i][j] = default_value;
 			}
 		}
 	}
 	
-	// Basic initialisation of Matrix filled with zeros
-	Matrix(unsigned int height, unsigned int width) {
+	// Basic initialisation of Matrix filled with default values
+	Matrix<T>(unsigned int height, unsigned int width) {
 		this->height = height;
 		this->width = width;
-		clear();
+		
+		// T{} --- is a default value of type T
+		clear(T{});
 	}
 	
 	// Clone Matrix initialisation (Initialise Matrix identical to "root_matrix") (COPY CONSTRUCTOR)
-	Matrix(const Matrix& root_matrix) {
+	Matrix<T>(const Matrix<T>& root_matrix) {
 		this->height = root_matrix.height;
 		this->width = root_matrix.width;
 		
-		this->data = new double*[root_matrix.height];
+		this->data = new T*[root_matrix.height];
 		for (unsigned int i = 0; i < root_matrix.height; i++) {
-			data[i] = new double[root_matrix.width];
+			this->data[i] = new T[root_matrix.width];
 			
 			for (unsigned int j = 0; j < root_matrix.width; j++) {
 				this->data[i][j] = root_matrix.data[i][j];
 			}
 		}
 	}
+	// Clone Matrix initialisation (Initialise Matrix identical to "root_matrix", but with different type) (COPY CONSTRUCTOR)
+	template<typename Y> Matrix<T>(const Matrix<Y>& root_matrix) {
+		this->height = root_matrix.getHeight();
+		this->width = root_matrix.getWidth();
+		
+		this->data = new T*[root_matrix.getHeight()];
+		for (unsigned int i = 0; i < root_matrix.getHeight(); i++) {
+			this->data[i] = new T[root_matrix.getWidth()];
+			
+			for (unsigned int j = 0; j < root_matrix.getWidth(); j++) {
+				this->data[i][j] = (T)root_matrix.getElement(i, j);
+			}
+		}
+	}
 	
-	// Obviosly destructor
+	// Obviously destructor
 	~Matrix() {
 		for (unsigned int i = 0; i < this->height; i++) {
 			delete[] this->data[i];
@@ -63,14 +83,14 @@ public:
 	unsigned int getWidth() const {
 		return this->width;
 	}
-	double getElement(unsigned int vertical_index, unsigned int horisontal_index) const {
+	T getElement(unsigned int vertical_index, unsigned int horisontal_index) const {
 		return this->data[vertical_index][horisontal_index];
 	}
 	
-	// Get elements of Matrix in linear double massive
-	double* getElements() const {
+	// Get elements of Matrix in linear T massive
+	T* getElements() const {
 		
-		double* result = new double[this->height * this->width];
+		T* result = new T[this->height * this->width];
 		for (unsigned int i = 0; i < this->height; i++) {
 			
 			for (unsigned int j = 0; j < this->width; j++) {
@@ -81,11 +101,11 @@ public:
 	}
 	
 	// Get data as it is ( Please, be careful, it's pretty hard to delete this data after )
-	double** getData() const {
+	T** getData() const {
 		
-		double** result_data = new double*[this->height];
+		T** result_data = new T*[this->height];
 		for (unsigned int i = 0; i < this->height; i++) {
-			result_data[i] = new double[this->width];
+			result_data[i] = new T[this->width];
 			for (unsigned int j = 0; j < this->width; j++) {
 				result_data[i][j] = this->data[i][j];
 			}
@@ -93,16 +113,16 @@ public:
 		return result_data;
 	}
 	
-	double* getRow(unsigned int vertical_index) const {
-		double* result = new double[this->width];
+	T* getRow(unsigned int vertical_index) const {
+		T* result = new T[this->width];
 		for (unsigned int i = 0; i < this->width; i++) {
 			result[i] = this->data[vertical_index][i];
 		}
 		return result;
 	}
 	
-	double* getColumn(unsigned int horisontal_index) const {
-		double* result = new double[this->height];
+	T* getColumn(unsigned int horisontal_index) const {
+		T* result = new T[this->height];
 		for (unsigned int i = 0; i < this->height; i++) {
 			result[i] = this->data[i][horisontal_index];
 		}
@@ -114,16 +134,16 @@ public:
 	}
 	
 	// Change needed element of matrix to value (all values in it)
-	void changeElement(unsigned int vertical_index, unsigned int horisontal_index, double value) {
+	void changeElement(unsigned int vertical_index, unsigned int horisontal_index, const T& value) {
 		this->data[vertical_index][horisontal_index] = value;
 	}
 	
 	// transpose Matrix
 	void transpose() {
 		
-		double** needed_data = new double*[width];
+		T** needed_data = new T*[width];
 		for (unsigned int i = 0; i < width; i++) {
-			needed_data[i] = new double[height];
+			needed_data[i] = new T[height];
 			for (unsigned int j = 0; j < height; j++) {
 				needed_data[i][j] = this->data[j][i];
 			}
@@ -142,10 +162,10 @@ public:
 	}
 	
 	// Get transpositioned Matrix
-	Matrix getTranspositioned() const {
+	Matrix<T> getTranspositioned() const {
 		
 		// Creating model of transpositioned matrix by switching width and height
-		Matrix result = Matrix(this->width, this->height);
+		Matrix<T> result = Matrix<T>(this->width, this->height);
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
 				result.data[j][i] = this->data[i][j];
@@ -155,9 +175,9 @@ public:
 	}
 	
 	// Get minor Matrix ( Matrix with excluded elements which vertical_index or horisontal_index matches are given )
-	Matrix getMinor(unsigned int vertical_index, unsigned int horisontal_index) const {
+	Matrix<T> getMinor(unsigned int vertical_index, unsigned int horisontal_index) const {
 		
-		Matrix result = Matrix(this->height - 1, this->width - 1);
+		Matrix<T> result = Matrix<T>(this->height - 1, this->width - 1);
 		
 		// Saving amount of rows (ki) and columns (kj) to skip when creating Matrix "result"
 		unsigned int ki = 0;
@@ -180,7 +200,7 @@ public:
 	}
 	
 	// Get determinant of Matrix by first column and first row
-	double getDeterminant() const {
+	T getDeterminant() const {
 		
 		if (this->height != this->width) {
 			throw std::invalid_argument("determinant doesn't exist, not square Matrix.");
@@ -191,27 +211,32 @@ public:
 			return this->data[0][0];
 		}
 		
-		double determinant = 0;
-		double sign = 1;
+		T determinant = 0;
+		bool sign = true;
 		for (unsigned int j = 0; j < this->width; j++) {
-			Matrix needed_minor = this->getMinor(0, j);
-			determinant += sign * (this->data[0][j] * needed_minor.getDeterminant());
-			sign *= -1;
+			Matrix<T> needed_minor = this->getMinor(0, j);
+			if (sign) {
+				determinant += (this->data[0][j] * needed_minor.getDeterminant());
+			}
+			else {
+				determinant -= (this->data[0][j] * needed_minor.getDeterminant());
+			}
+			sign  = sign ? false : true;
 		}
 		
 		return determinant;
 	}
 	
-	// Get adjugate Matrix ( Matrix, that is made from algebraic adjugation of each element (and transpositioned))
-	Matrix getAdjugated() const {
+	// Get adjugate Matrix<T> ( Matrix, that is made from algebraic adjugation of each element (and transpositioned))
+	Matrix<T> getAdjugated() const {
 		
 		// Transpositioning base Matrix
-		Matrix needed_matrix = this->getTranspositioned();
-		Matrix result = Matrix(needed_matrix.height, needed_matrix.width);
+		Matrix<T> needed_matrix = this->getTranspositioned();
+		Matrix<T> result = Matrix<T>(needed_matrix.height, needed_matrix.width);
 		
 		for (unsigned int i = 0; i < needed_matrix.height; i++) {
 			for (unsigned int j = 0; j < needed_matrix.width; j++) {
-				Matrix needed_minor = needed_matrix.getMinor(i, j);
+				Matrix<T> needed_minor = needed_matrix.getMinor(i, j);
 				if ((i + j) % 2 == 0) {
 					result.data[i][j] = needed_minor.getDeterminant();
 				}
@@ -225,11 +250,11 @@ public:
 	
 	// Invert Matrix
 	void invert() {
-		Matrix needed_matrix = this->getAdjugated() / this->getDeterminant();
+		Matrix<T> needed_matrix = this->getAdjugated() / this->getDeterminant();
 		
-		double** needed_data = new double*[needed_matrix.height];
+		T** needed_data = new T*[needed_matrix.height];
 		for (unsigned int i = 0; i < needed_matrix.height; i++) {
-			needed_data[i] = new double[needed_matrix.width];
+			needed_data[i] = new T[needed_matrix.width];
 			for (unsigned int j = 0; j < needed_matrix.width; j++) {
 				needed_data[i][j] = needed_matrix.data[i][j];
 			}
@@ -242,14 +267,14 @@ public:
 	}
 	
 	// Get inverted Matrix
-	Matrix getInverted() const {
+	Matrix<T> getInverted() const {
 		if (this->getDeterminant() == 0) {
 			throw std::invalid_argument("determinant 0, inverted Matrix doesn't exist");
 		}
-	    return  this->getAdjugated() / this->getDeterminant();
+		return  this->getAdjugated() / this->getDeterminant();
 	}
 	
-	// Print Matrix in classical way
+	// Print Matrix in a classical way
 	void print() const {
 		
 		for (unsigned int i = 0; i < height; i++) {
@@ -262,7 +287,7 @@ public:
 	}
 	
 	// Fill Matrix with value
-	void fill(double value) {
+	void fill(T value) {
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
 				this->data[i][j] = value;
@@ -271,60 +296,60 @@ public:
 	}
 	
 	// Get sum with matrix
-	Matrix getSum(const Matrix& b) const {
+	template <typename Y> Matrix<T> getSum(const Matrix<Y>& b) const {
 		
 		// Basic checks
-		if (this->height != b.height || this->width != b.width) {
+		if (this->height != b.getHeight() || this->width != b.getWidth()) {
 			throw std::invalid_argument("summing wrong sizes Matrix");
 		}
 		
 		// Taking width and height of Matrix "a"
-		Matrix result = Matrix(this->height, this->width);
+		Matrix<T> result = Matrix<T>(this->height, this->width);
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
-				result.data[i][j] = this->data[i][j] + b.data[i][j];
+				result.data[i][j] = this->data[i][j] + b.getElement(i, j);
 			}
 		}
 		return result;
 	}
 	
 	// Get subtraction of two matrix
-	Matrix getSubtraction(const Matrix& b) const {
+	template <typename Y> Matrix<T> getSubtraction(const Matrix<Y>& b) const {
 		
 		// Basic checks
-		if (this->height != b.height || this->width != b.width) {
+		if (this->height != b.getHeight() || this->width != b.getWidth()) {
 			throw std::invalid_argument("subtracting wrong sizes Matrix");
 		}
 		
 		// Taking width and height of Matrix "a"
-		Matrix result = Matrix(this->height, this->width);
+		Matrix<T> result = Matrix<T>(this->height, this->width);
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
-				result.data[i][j] = this->data[i][j] - b.data[i][j];
+				result.data[i][j] = this->data[i][j] - b.getElement(i, j);
 			}
 		}
 		return result;
 	}
 	
 	// Get multiplication of two Matrix
-	Matrix getMultiplication(const Matrix& b) const {
+	template <typename Y> Matrix<T> getMultiplication(const Matrix<Y>& b) const {
 		
 		// Basic checks
-		if (this->width != b.height) {
+		if (this->width != b.getHeight()) {
 			throw std::invalid_argument("multiplying Matrix wrong sizes Matrix");
 		}
 		
 		// Taking height of Matrix "a" and width of Matrix "b"
-		Matrix result = Matrix(this->height, b.width);
+		Matrix<T> result = Matrix<T>(this->height, b.getWidth());
 		
-		double tmp_value;
+		T tmp_value;
 		for (unsigned int i = 0; i < this->height; i++) {
-			for (unsigned int j = 0; j < b.width; j++) {
+			for (unsigned int j = 0; j < b.getWidth(); j++) {
 				tmp_value = 0;
 				for (unsigned int k = 0; k < this->width; k++) {
-					tmp_value += this->data[i][k] * b.data[k][j];
+					tmp_value += this->data[i][k] * b.getElement(k, j);
 				}
 				result.data[i][j] = tmp_value;
 			}
@@ -332,11 +357,11 @@ public:
 		return result;
 	}
 	
-	// Get multiplication of Matrix and scalar
-	Matrix getMultiplication(double b) const {
+	// Get multiplication of Matrix and scalar of type Y
+	template <typename Y> Matrix<T> getMultiplication(Y b) const {
 		
 		// Taking height of Matrix "a" and width of Matrix "a"
-		Matrix result = Matrix(this->height, this->width);
+		Matrix<T> result = Matrix<T>(this->height, this->width);
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
@@ -347,15 +372,15 @@ public:
 		return result;
 	}
 	
-	// Get division of Matrix and scalar
-	Matrix getDivision(double b) const {
+	// Get division of Matrix and scalar of type Y
+	template <typename Y> Matrix<T> getDivision(Y b) const {
 		
 		if (b == 0) {
 			throw std::invalid_argument("dividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)");
 		}
 		
 		// Taking height of Matrix "a" and width of Matrix "a"
-		Matrix result = Matrix(this->height, this->width);
+		Matrix<T> result = Matrix<T>(this->height, this->width);
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
@@ -369,7 +394,7 @@ public:
 	// 
 	// Operator overloading
 	// 
-	Matrix& operator = (const Matrix& right) {
+	Matrix<T>& operator = (const Matrix<T>& right) {
 		
 		// Check self-assignment
 		if (this == &right) {
@@ -383,65 +408,65 @@ public:
 		delete[] this->data;
 		
 		// Assign needed "right.data"
-		this->height = right.height;
-		this->width = right.width;
+		this->height = right.getHeight();
+		this->width = right.getWidth();
 		
-		this->data = new double*[right.height];
-		for (unsigned int i = 0; i < right.height; i++) {
-			data[i] = new double[right.width];
+		this->data = new T*[right.getHeight()];
+		for (unsigned int i = 0; i < right.getHeight(); i++) {
+			data[i] = new T[right.getWidth()];
 			
-			for (unsigned int j = 0; j < right.width; j++) {
-				this->data[i][j] = right.data[i][j];
+			for (unsigned int j = 0; j < right.getWidth(); j++) {
+				this->data[i][j] = right.getElement(i, j);
 			}
 		}
 		return *this;
 	}
 	
-	Matrix& operator += (const Matrix& right) {
+	template <typename Y> Matrix<T>& operator += (const Matrix<Y>& right) {
 		
 		// Basic checks
-		if (this->height != right.height || this->width != right.width) {
+		if (this->height != right.getHeight() || this->width != right.getWidth()) {
 			throw std::invalid_argument("+= wrong sizes Matrix");
 		}
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
-				this->data[i][j] += right.data[i][j];
+				this->data[i][j] += (T)right.getElement(i, j);
 			}
 		}
 		return *this;
 	}
-	Matrix& operator -= (const Matrix& right) {
+	template <typename Y> Matrix<T>& operator -= (const Matrix<Y>& right) {
 		
 		// Basic checks
-		if (this->height != right.height || this->width != right.width) {
+		if (this->height != right.getHeight() || this->width != right.getWidth()) {
 			throw std::invalid_argument("-= wrong sizes Matrix");
 		}
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
-				this->data[i][j] -= right.data[i][j];
+				this->data[i][j] -= (T)right.getElement(i, j);
 			}
 		}
 
 		return *this;
 	}
-	Matrix& operator *= (const Matrix& right) {
+	template <typename Y> Matrix<T>& operator *= (const Matrix<Y>& right) {
 		
 		// Basic checks
-		if (this->width != right.height) {
+		if (this->width != right.getHeight()) {
 			throw std::invalid_argument("*= wrong sizes Matrix");
 		}
 		
-		double** result_data = new double*[this->height];
+		T** result_data = new T*[this->height];
 		
-		double tmp_value;
+		T tmp_value;
 		for (unsigned int i = 0; i < this->height; i++) {
-			result_data[i] = new double[right.width];
-			for (unsigned int j = 0; j < right.width; j++) {
+			result_data[i] = new T[right.getWidth()];
+			for (unsigned int j = 0; j < right.getWidth(); j++) {
 				tmp_value = 0;
 				for (unsigned int k = 0; k < this->width; k++) {
-					tmp_value += this->data[i][k] * right.data[k][j];
+					tmp_value += this->data[i][k] * (T)right.getElement(k, j);
 				}
 				result_data[i][j] = tmp_value;
 			}
@@ -452,56 +477,93 @@ public:
 		}
 		delete[] this->data;
 		this->data = result_data;
-		this->width = right.width;
+		this->width = right.getWidth();
 		return *this;
 	}
 	
-	Matrix operator + (const Matrix& right) const {
+	template <typename Y> Matrix<T> operator + (const Matrix<Y>& right) const {
 		return this->getSum(right);
 	}
-	Matrix operator - (const Matrix& right) const {
+	template <typename Y> Matrix<T> operator - (const Matrix<Y>& right) const {
 		return this->getSubtraction(right);
 	}
-	Matrix operator * (const Matrix& right) const {
+	template <typename Y> Matrix<T> operator * (const Matrix<Y>& right) const {
 		return this->getMultiplication(right); 
 	}
-	Matrix operator * (double value) const {
+	template <typename Y> Matrix<T> operator * (Y value) const {
 		return this->getMultiplication(value);
 	}
-	Matrix operator / (double value) const {
+	template <typename Y> Matrix<T> operator / (Y value) const {
 		return this->getDivision(value);
 	}
 	
-	bool operator == (const Matrix& right) const {
+	// Operator == if type of "right" is any
+	template <typename Y> bool operator == (const Matrix<Y>& right) const {
 		
-		if (this->height != right.height || this->width != right.width) {
+		if (this->height != right.getHeight() || this->width != right.getWidth()) {
 			return false;
 		}
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
-				if (this->data[i][j] < right.data[i][j] - DOUBLE_THRESHOLD || this->data[i][j] > right.data[i][j] + DOUBLE_THRESHOLD) {
+				if (this->data[i][j] != right.getElement(i, j)) {
 					return false;
 				}
 			}
 		}
 		return true;
 	}
-	bool operator != (const Matrix& right) const {
+	// Operator == if type of "right" is double
+	template <typename Y> bool operator == (const Matrix<double>& right) const {
+		
+		if (this->height != right.getHeight() || this->width != right.getWidth()) {
+			return false;
+		}
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				if (this->data[i][j] < right.getElement(i, j) - DOUBLE_THRESHOLD || this->data[i][j] > right.getElement(i, j) + DOUBLE_THRESHOLD) {
+						return false;
+				}
+			}
+		}
+		return true;
+	}
+	// Operator == if type of "right" is float
+	template <typename Y> bool operator == (const Matrix<float>& right) const {
+		
+		if (this->height != right.getHeight() || this->width != right.getWidth()) {
+			return false;
+		}
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				if (this->data[i][j] < right.getElement(i, j) - FLOAT_THRESHOLD || this->data[i][j] > right.getElement(i, j) + FLOAT_THRESHOLD) {
+						return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	template <typename Y> bool operator != (const Matrix<Y>& right) const {
 		return !((*this) == right);
 	}
 	
 	// Access operators overloading !!IS NOT MEMORY SAFE, BE EXTREMELY CAREFUL!!
-	double* operator [] (unsigned int index) {
+	T* operator [] (unsigned int index) {
 		if (index >= height) {
 			throw std::invalid_argument("Array index exceeds boundaries of Matrix");
 		}
 		return data[index];
 	}
-	double* operator [] (unsigned int index) const {
+	T* operator [] (unsigned int index) const {
 		if (index >= height) {
 			throw std::invalid_argument("Array index exceeds boundaries of Matrix");
 		}
 		return data[index];
+	}
+	
+	// Operator of type conversion
+	template<typename Y> operator Matrix<Y>() const {
+		return Matrix<Y>(*this);
 	}
 	
 };
@@ -509,12 +571,12 @@ public:
 // 
 // Overloading operators, that cannot be overloaded inside of Matrix
 // 
-Matrix operator * (double value, const Matrix& right) {
+template<typename T, typename Y> Matrix<T> operator * (Y value, const Matrix<T>& right) {
 	return right.getMultiplication(value);
 }
 
 // Overloading some std functions for Matrix
-std::ostream& operator<<(std::ostream& os, const Matrix& matrix) {
+template<typename T> std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
 	for (unsigned int i = 0; i < matrix.getHeight(); i++) {
 		os << "||\t\t";
 		for (unsigned int j = 0; j < matrix.getWidth(); j++) {
@@ -532,7 +594,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix& matrix) {
 
 
 
-class Vector : public Matrix {
+template<typename T = double> class Vector : public Matrix<T> {
 
 protected: 
 	unsigned int dimension;
@@ -543,22 +605,22 @@ public:
 	}
 	
 	// Get Matrix that represents Vector
-	Matrix getMatrix() const {
-		return Matrix(*this);
+	Matrix<T> getMatrix() const {
+		return Matrix<T>(*this);
 	}
 	
 	// Initialisation of Vector with "coords = 0" and dimension "dimension"
-	Vector(unsigned int dimension) : Matrix(dimension, 1) {
+	Vector<T>(unsigned int dimension) : Matrix<T>(dimension, 1) {
 		this->dimension = dimension;
 	}
 	
 	// Initialisation of Vector with Matrix, that matches with given "needed_matrix"
-	Vector(const Matrix& needed_matrix) : Matrix(needed_matrix) {
+	Vector<T>(const Matrix<T>& needed_matrix) : Matrix<T>(needed_matrix) {
 		this->dimension = needed_matrix.getSize();
 	}
 	
 	// Initialisation of Vector with given coordinates as "coords_value" and dimension "dimension"
-	Vector(unsigned int dimension, double const* const coords_value) : Matrix(dimension, 1) {
+	Vector<T>(unsigned int dimension, T const* const coords_value) : Matrix<T>(dimension, 1) {
 		this->dimension = dimension;
 		for (unsigned int i = 0; i < dimension; i++) {
 			this->data[i][0] = coords_value[i];
@@ -566,7 +628,7 @@ public:
 	}
 	
 	// Initialisation clone of Vector "vector" (COPY CONSTRUCTOR)
-	Vector(const Vector& vector) : Matrix(vector) {
+	Vector<T>(const Vector<T>& vector) : Matrix<T>(vector) {
 		this->dimension = vector.getDimension();
 	}
 	
@@ -574,58 +636,58 @@ public:
 	~Vector() {}
 	
 	// Get module/length of the Vector !WORKS ONLY IN ORTOGONAL DEKART_SYSTEM OF COORDINAT!
-	double getModule() const {
+	T getModule() const {
 		return sqrt(this->get_scalar_multiplication(*this));
 	}
 	
 	// Get sum of two Vectors
-	Vector getSum(const Vector& b) const {
-		return Vector(this->getMatrix() + b.getMatrix());
+	template <typename Y> Vector<T> getSum(const Vector<Y>& b) const {
+		return Vector<T>(this->getMatrix() + b.getMatrix());
 	}
 	
 	// Get subtraction of two Vectors
-	Vector getSubtraction(const Vector& b) const {
-		return Vector(this->getMatrix() - b.getMatrix());
+	template <typename Y> Vector<T> getSubtraction(const Vector<Y>& b) const {
+		return Vector<T>(this->getMatrix() - b.getMatrix());
 	}
 	
 	// Get multiplication of Vector and scalar
-	Vector getMultiplication(double value) const {
-		return Vector(this->getMatrix() * value);	
+	template<typename Y> Vector<T> getMultiplication(Y value) const {
+		return Vector<T>(this->getMatrix() * value);
 	}
 		
 	// Get division of Vector and scalar
-	Vector getDivision(double value) const {
-		return Vector(this->getMatrix() / value);	
+	template<typename Y> Vector<T> getDivision(Y value) const {
+		return Vector<T>(this->getMatrix() / value);
 	}
 	
 	// Return result of scalar multiplication of this Vector to another !WORKS ONLY IN ORTOGONAL DEKART_SYSTEM OF COORDINAT!
-	double get_scalar_multiplication(const Vector& b) const {
+	template <typename Y> T get_scalar_multiplication(const Vector<Y>& b) const {
 		
-		Matrix needed_coords_matrix = this->getTranspositioned() * b.getMatrix();
-		double* needed_elements = needed_coords_matrix.getElements();
-		double result = needed_elements[0];
+		Matrix<T> needed_coords_matrix = this->getTranspositioned() * b.getMatrix();
+		T* needed_elements = needed_coords_matrix.getElements();
+		T result = needed_elements[0];
 		
 		delete[] needed_elements;
 		return result;
 	}
 	
 	// Return result of vector multiplication of this Vector to another !WORKS ONLY ON 3-DIMENSIONAL VECTORS!
-	Vector get_vector_multiplication(const Vector& b) const {
+	template <typename Y> Vector<T> get_vector_multiplication(const Vector<Y>& b) const {
 		
 		if (dimension != 3) {
 			throw std::invalid_argument("Vector multiplication works only with 3 dimensional Vectors :/");
 		}
 
-		double* a_coords = this->getElements();
-		double* b_coords = b.getElements();
+		T* a_coords = this->getElements();
+		Y* b_coords = b.getElements();
 		
 		// Equation from Wikipedia
-		double* result_coords = new double[3];
+		T* result_coords = new T[3];
 		result_coords[0] = a_coords[1] * b_coords[2] - b_coords[1] * a_coords[2];
 		result_coords[1] = -(a_coords[0] * b_coords[2] - b_coords[0] * a_coords[2]);
 		result_coords[2] = a_coords[0] * b_coords[1] - b_coords[0] * a_coords[1];
 		
-		Vector result = Vector(3, result_coords);
+		Vector<T> result = Vector<T>(3, result_coords);
 		
 		delete[] a_coords;
 		delete[] b_coords;
@@ -634,12 +696,12 @@ public:
 	}
 	
 	// Get rotated Vector in 2 dimensions, angle in radians.
-	Vector getRotated(double needed_angle) const {
+	template <typename Y> Vector<T> getRotated(Y needed_angle) const {
 		
 		if (dimension < 2) {
 			throw std::invalid_argument("Too few dimensions to perform 2d rotation");
 		}
-		Matrix rotate_matrix(dimension, dimension);
+		Matrix<T> rotate_matrix(dimension, dimension);
 		for (unsigned int i = 2; i < dimension; i++) {
 			rotate_matrix[i][i] = 1;
 		}
@@ -649,16 +711,16 @@ public:
 		rotate_matrix[1][0] = std::sin(needed_angle);
 		rotate_matrix[1][1] = std::cos(needed_angle);
 		
-		Vector result = Vector(rotate_matrix * this->getMatrix());
+		Vector<T> result = Vector<T>(rotate_matrix * this->getMatrix());
 		return result;
 	}
 	// Get rotated Vector in 3 dimensions, angle in radians, rotates by axis Z then axis Y
-	Vector getRotated(double needed_angle_z, double needed_angle_y) {
+	template <typename Y, typename H> Vector<T> getRotated(Y needed_angle_z, H needed_angle_y) {
 		
 		if (dimension < 3) {
 			throw std::invalid_argument("Too few dimensions to perform 3d rotation");
 		}
-		Matrix rotate_matrix_z(dimension, dimension);
+		Matrix<T> rotate_matrix_z(dimension, dimension);
 		for (unsigned int i = 0; i < dimension; i++) {
 			rotate_matrix_z[i][i] = 1;
 		}
@@ -669,7 +731,7 @@ public:
 		rotate_matrix_z[1][1] = std::cos(needed_angle_z);
 		std::cout << "ROTATE_MATRIX_Z: \n" << rotate_matrix_z << '\n';
 
-		Matrix rotate_matrix(dimension, dimension);
+		Matrix<T> rotate_matrix(dimension, dimension);
 		for (unsigned int i = 0; i < dimension; i++) {
 			rotate_matrix[i][i] = 1;
 		}
@@ -683,7 +745,7 @@ public:
 		rotate_matrix *= rotate_matrix_z;
 		std::cout << "RESULT ROTATE MATRIX: \n" << rotate_matrix << '\n';
 		
-		Vector result = Vector(rotate_matrix * this->getMatrix());
+		Vector<T> result = Vector<T>(rotate_matrix * this->getMatrix());
 		return result;
 	}
 
@@ -691,7 +753,7 @@ public:
 	// Operators overloading
 	// 
 	// Algebraic operators overloading 
-	Vector& operator = (const Vector& right) {
+	template <typename Y> Vector<T>& operator = (const Vector<Y>& right) {
 		
 		// Check self-assignment
 		if (this == &right) {
@@ -705,118 +767,123 @@ public:
 		delete[] this->data;
 		
 		// Assign needed "right.data"
-		this->dimension = right.dimension;
-		this->height = right.height;
-		this->width = right.width;
+		this->dimension = right.getDimension();
+		this->height = right.getHeight();
+		this->width = right.getWidth();
 		
-		this->data = new double*[right.height];
-		for (unsigned int i = 0; i < right.height; i++) {
-			data[i] = new double[right.width];
+		this->data = new T*[right.getHeight()];
+		for (unsigned int i = 0; i < right.getHeight(); i++) {
+			this->data[i] = new T[right.getWidth()];
 			
-			for (unsigned int j = 0; j < right.width; j++) {
-				this->data[i][j] = right.data[i][j];
+			for (unsigned int j = 0; j < right.getWidth(); j++) {
+				this->data[i][j] = right.getElement(i, j);
 			}
 		}
 		return *this;
 	}
-	Vector& operator += (const Vector& right) {
+	template <typename Y> Vector<T>& operator += (const Vector<Y>& right) {
 		
 		// Basic checks
-		if (this->height != right.height) {
+		if (this->height != right.getHeight()) {
 			throw std::invalid_argument("+= wrong sizes Vectors");
 		}
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
-				this->data[i][j] += right.data[i][j];
+				this->data[i][j] += right.getElement(i, j);
 			}
 		}
 		return *this;
 	}
-	Vector& operator -= (const Vector& right) {
+	template <typename Y> Vector<T>& operator -= (const Vector<Y>& right) {
 		
 		// Basic checks
-		if (this->height != right.height) {
+		if (this->height != right.getHeight()) {
 			throw std::invalid_argument("-= wrong sizes Vectors");
 		}
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
-				this->data[i][j] -= right.data[i][j];
+				this->data[i][j] -= right.getElement(i, j);
 			}
 		}
 		return *this;
 	}
-	Vector operator + (const Vector& right) const {
+	template <typename Y> Vector<T> operator + (const Vector<Y>& right) const {
 		return this->getSum(right);
 	}
 	
-	Vector operator - (const Vector& right) const {
+	template <typename Y> Vector<T> operator - (const Vector<Y>& right) const {
 		return this->getSubtraction(right);
 	}
 	
-	Vector operator * (double value) const {
+	template <typename Y> Vector<T> operator * (Y value) const {
 		return this->getMultiplication(value);
 	}
 	
-	Vector operator / (double value) const {
+	template <typename Y> Vector<T> operator / (Y value) const {
 		return this->getDivision(value);
 	}
 	
-	bool operator == (const Vector& right) const {
-		if (this->dimension != right.dimension || this->getMatrix() != right.getMatrix()) {
+	template <typename Y> bool operator == (const Vector<Y>& right) const {
+		if (this->dimension != right.getDimension() || this->getMatrix() != right.getMatrix()) {
 			return false;
 		}
 		return true;
 	}
-	bool operator != (const Vector& right) const {
+	template <typename Y> bool operator != (const Vector<Y>& right) const {
 		return !((*this) == right);
 	}
 	
 	// Comparsion operators overloading
-	bool operator < (const Vector& right) const {
+	template <typename Y> bool operator < (const Vector<Y>& right) const {
 		if (this->getModule() < right.getModule() - DOUBLE_THRESHOLD) {
 			return true;
 		}
 		return false;
 	}
-	bool operator > (const Vector& right) const {
+	template <typename Y> bool operator > (const Vector<Y>& right) const {
 		if (this->getModule() > right.getModule() + DOUBLE_THRESHOLD) {
 			return true;
 		}
 		return false;
 	}
-	bool operator <= (const Vector& right) const {
+	template <typename Y> bool operator <= (const Vector<Y>& right) const {
 		return !((*this) > right);
 	}
-	bool operator >= (const Vector& right) const {
+	template <typename Y> bool operator >= (const Vector<Y>& right) const {
 		return !((*this) < right);
 	}
 	
 	// Access operators overloading
-	double& operator [] (unsigned int index) {
+	T& operator [] (unsigned int index) {
 		if (index >= dimension) {
 			throw std::invalid_argument("Array index exceeds boundaries of Vector");
 		}
-		return data[index][0];
+		return this->data[index][0];
 	}
-	const double& operator [] (unsigned int index) const {
+	const T& operator [] (unsigned int index) const {
 		if (index >= dimension) {
 			throw std::invalid_argument("Array index exceeds boundaries of Vector");
 		}
-		return data[index][0];
+		return this->data[index][0];
+	}
+	
+	// Operator of type conversion
+	template<typename Y> operator Vector<Y>() const {
+		return Vector<Y>(*this);
 	}
 };
 
 // 
 // Overloading operators, that cannot be overloaded inside of Vector
 //
-Vector operator * (double value, const Vector& right) {
+template<typename T, typename Y> Vector<T> operator * (Y value, const Vector<T>& right) {
 	return right.getMultiplication(value);
 }
 
 // Overloading some std functions for Vector
-std::ostream& operator<<(std::ostream& os, const Vector& vector) {
+template<typename T> std::ostream& operator<<(std::ostream& os, const Vector<T>& vector) {
 	os << "(";
 	for (unsigned int i = 0; i < vector.getHeight() - 1; i++) {
 		os << vector.getElement(i, 0) << "; ";
@@ -825,8 +892,8 @@ std::ostream& operator<<(std::ostream& os, const Vector& vector) {
 	return os;
 }
 
-std::istream& operator>>(std::istream &is, Vector& vector) {
-	double tmp;
+template<typename T> std::istream& operator>>(std::istream &is, Vector<T>& vector) {
+	T tmp;
 	for (unsigned int i = 0; i < vector.getHeight(); i++) {
 		is >> tmp;
 		vector.changeElement(i, 0, tmp);

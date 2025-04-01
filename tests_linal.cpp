@@ -4,8 +4,13 @@
 #include<iostream>
 #include<vector>
 
+#include <type_traits>
+
+#include<string>
+
 using std::cout;
 using std::endl;
+using std::string;
 
 #define PI 3.1415926535897932384626433
 
@@ -26,7 +31,7 @@ int main() {
 	x.print();
 	
 	cout << "Clone: \n";
-	Matrix y = Matrix(x);
+	Matrix y(x);
 	y.print();
 	
 	cout << "Original: \n";
@@ -53,7 +58,7 @@ int main() {
 	multiplication_xy.print();
 	
 	cout << " --- Vector Part --- \n";
-	Vector a = Vector(3);
+	Vector a(3);
 	a.changeElement(0, 0, 0.5);
 	a.changeElement(1, 0, 1.5);
 	a.changeElement(2, 0, 2.5);
@@ -161,8 +166,8 @@ int main() {
 	std::cin >> tmp;
 	
 	cout << "Dinamic array of Matrix initialisation check:\n";
-	unsigned int length_array_matrix = 100000;
-	Matrix** array_matrix = new Matrix*[length_array_matrix];
+	unsigned int length_array_matrix = 1000;
+	Matrix<double>** array_matrix = new Matrix<double>*[length_array_matrix];
 	
 	for (unsigned int i = 0; i < length_array_matrix; i++) {
 		cout << i << " ";
@@ -234,8 +239,8 @@ int main() {
 	std::cin >> tmp;
 	
 	cout << "Dinamic array of Vectors initialisation check:\n";
-	unsigned int length_array_vector = 100000;
-	Vector** array_vector = new Vector*[length_array_vector];
+	unsigned int length_array_vector = 1000;
+	Vector<double>** array_vector = new Vector<double>*[length_array_vector];
 	
 	for (unsigned int i = 0; i < length_array_vector; i++) {
 		cout << i << " ";
@@ -253,6 +258,118 @@ int main() {
 	}
 	delete[] array_vector;
 	
+	cout << " --- Templates checking --- \n";
+	cout << "Matrix<bool> initialisation:\n";
+	cout << std::boolalpha;
+	Matrix<bool> bool_matrix(3, 3);
+	cout << bool_matrix << '\n';
+	
+	cout << "Matrix<char> initialisation:\n";
+	Matrix<char> char_matrix(3, 3);
+	cout << char_matrix << '\n';
+	
+	cout << "Matrix<bool>[i][i] = true:\n";
+	for (unsigned int i = 0; i < bool_matrix.getHeight(); i++) {
+		for (unsigned int j = 0; j < bool_matrix.getWidth(); j++) {
+			if (i == j) {
+				bool_matrix[i][j] = true;
+			}
+		}
+	}
+	cout << bool_matrix << '\n';
 
+	cout << "Matrix<char> fill with \':\':\n";
+	char_matrix.fill(':');
+	cout << char_matrix << '\n';
+	
+	cout << "Matrix<char> + Matrix<bool>:\n";
+	cout << char_matrix + bool_matrix << '\n';
+	
+	cout << "Matrix<bool> + Matrix<char>:\n";
+	cout << bool_matrix + char_matrix << '\n';
+	
+	cout << "Matrix<char> * 5:\n";
+	cout << char_matrix * 5 / 2<< '\n';
+	
+	cout << "Matrix<char> * Matrix<bool>:\n";
+	cout << char_matrix * bool_matrix << '\n';
+	
+	cout << "Get determinant of Matrix<bool>:\n";
+	cout << bool_matrix.getDeterminant() << '\n';
+	
+	cout << "Get adjugated Matrix of Matrix<bool>:\n";
+	cout << bool_matrix.getAdjugated() << '\n';
+	
+	cout << "Matrix<short> filled with zeros:\n";
+	Matrix<short> short_matrix(3, 3);
+	cout << short_matrix << '\n';
+	
+	cout << "Matrix<bool> filled with zeros:\n";
+	Matrix<bool> zeros_bool_matrix(3, 3);
+	cout << zeros_bool_matrix << '\n';
+	
+	cout << "Matrix<short> == Matrix<bool> filled with zeros:\n";
+	cout << (short_matrix == zeros_bool_matrix) << '\n';
+	
+	cout << "Matrix<short> == Matrix<char>:\n";
+	cout << (short_matrix == char_matrix) << '\n';
+	
+	cout << "Matrix<string> initialisation:\n";
+	Matrix<string> string_matrix(3, 3);
+	cout << string_matrix << '\n';
+	
+	cout << "Matrix<string> fill with \"sigma\" and Matrix<string>[1][1] = \"fijma\":\n";
+	string_matrix.fill("sigma");
+	string_matrix[1][1] = "fijma";
+	cout << string_matrix << '\n';
+	
+	cout << "Matrix<string> + Matrix<string> filled with \"gg wp\":\n";
+	Matrix<string> ggwp_matrix(3, 3);
+	ggwp_matrix.fill("gg wp");
+	cout << string_matrix + ggwp_matrix << '\n';
+	
+	cout << "Matrix<unsigned int> filled with 228:\n";
+	Matrix<unsigned int> unsignedInt_matrix(3, 3);
+	unsignedInt_matrix.fill(228);
+	cout << unsignedInt_matrix << '\n';
+	
+	cout << "Matrix<long long int> filled with 42:\n";
+	Matrix<long long int> longLongInt_matrix(3, 3);
+	longLongInt_matrix.fill(42);
+	cout << longLongInt_matrix << '\n';
+	
+	cout << "Type conversion check: (Matrix<char>)Matrix<unsigned int>:\n";
+	Matrix<char> result_of_conversion = (Matrix<char>)unsignedInt_matrix;
+	cout << result_of_conversion << '\n';
+	
+	cout << "Matrix<unsigned int> == Matrix<long long int>:\n";
+	cout << (unsignedInt_matrix == longLongInt_matrix) << '\n';
+
+	cout << "Vector<char> initialisation:\n";
+	Vector<char> char_vector(3);
+	cout << char_vector << '\n';
+	
+	cout << "Vector<char> filled with \'=\'\n";
+	char_vector.fill('=');
+	cout << char_vector << '\n';
+	
+	cout << "Rotate Vector<char> by PI / 2:\n";
+	cout << char_vector.getRotated(PI / 2) << '\n';
+	
+	cout << "Scalar multiplication of Vector<char> with Vector<bool> filled with true:\n";
+	Vector<bool> true_vector(3);
+	true_vector.fill(true);
+	cout << char_vector.get_scalar_multiplication(true_vector) << '\n';
+	
+	cout << "Scalar multiplication of Vector<bool> filled with true with Vector<char>:\n";
+	cout << true_vector.get_scalar_multiplication(char_vector) << '\n';
+	
+	cout << "vector multiplication of Vector<char> with Vector<bool> filled with true:\n";
+	cout << char_vector.get_vector_multiplication(true_vector) << '\n';
+	
+	cout << "vector multiplication of Vector<bool> filled with true with Vector<char>:\n";
+	cout << true_vector.get_vector_multiplication(char_vector) << '\n';
+	
+	
 	return 0;
 }
