@@ -12,6 +12,10 @@
 #define DOUBLE_THRESHOLD 0.000001
 #endif
 
+#define KFM_LINAL_TABS_FOR_MATRIX_PRINT "\t\t"
+unsigned short KFM_LINAL_AMOUNT_OF_PRINTS = 0;
+
+
 template<typename T = double> class Matrix {
 
 protected: 
@@ -20,7 +24,7 @@ protected:
 	T** data;
 
 public: 
-	// Initialise Matrix's data with given value
+	// Initialise Matrix's data with needed values
 	void clear(const T& needed_value) {
 		this->data = new T*[this->height];
 		for (unsigned int i = 0; i < this->height; i++) {
@@ -31,6 +35,10 @@ public:
 		}
 	}
 	
+	// Default initialisation of Matrix !!!VERY, VERY UNSAFE, NEVER USE IT!!!
+	Matrix<T>() {
+		this->data = nullptr;
+	}
 	// Basic initialisation of Matrix filled with default values
 	Matrix<T>(unsigned int height, unsigned int width) {
 		this->height = height;
@@ -39,7 +47,7 @@ public:
 		// T{} --- is a default value of type T
 		clear(T{});
 	}
-	// Basic initialisation of Matrix filled with given value
+	// Basic initialisation of Matrix filled with needed values
 	Matrix<T>(unsigned int height, unsigned int width, const T& needed_value) {
 		this->height = height;
 		this->width = width;
@@ -283,12 +291,23 @@ public:
 	void print() const {
 		
 		for (unsigned int i = 0; i < height; i++) {
-			std::cout << "||\t\t";
-			for (unsigned int j = 0; j < width; j++) {
-				std::cout << data[i][j] << "\t\t";
+			
+			for (unsigned short j = 0; j < KFM_LINAL_AMOUNT_OF_PRINTS; j++) {
+				if (i == 0) continue;
+				std::cout << '\t';
 			}
-			std::cout << "||\n";
+			
+			std::cout << "||" << KFM_LINAL_TABS_FOR_MATRIX_PRINT;
+			KFM_LINAL_AMOUNT_OF_PRINTS += 2;
+			for (unsigned int j = 0; j < width; j++) {
+				std::cout << data[i][j] << KFM_LINAL_TABS_FOR_MATRIX_PRINT;
+			}
+			if (i != height - 1) {
+				std::cout << "|| * \n";
+			}
+			KFM_LINAL_AMOUNT_OF_PRINTS -= 2;
 		}
+		std::cout << "|| ** \n";
 	}
 	
 	// Fill Matrix with value
@@ -406,11 +425,13 @@ public:
 			return *this;
 		}
 		
-		// Delete current "data"
-		for (unsigned int i = 0; i < this->height; i++) {
-			delete[] this->data[i];
+		// Delete current "data" if was initialised
+		if (this->data != nullptr) {
+			for (unsigned int i = 0; i < this->height; i++) {
+				delete[] this->data[i];
+			}
+			delete[] this->data;
 		}
-		delete[] this->data;
 		
 		// Assign needed "right.data"
 		this->height = right.getHeight();
@@ -595,17 +616,23 @@ template<typename T, typename Y> Matrix<T> operator * (Y value, const Matrix<T>&
 // Overloading some std functions for Matrix
 template<typename T> std::ostream& operator<<(std::ostream& os, const Matrix<T>& matrix) {
 	for (unsigned int i = 0; i < matrix.getHeight(); i++) {
-		os << "||\t\t";
+		
+		for (unsigned short j = 0; j < KFM_LINAL_AMOUNT_OF_PRINTS; j++) {
+			if (i == 0) continue;
+			os << '\t';
+		}
+		
+		os << "||" << KFM_LINAL_TABS_FOR_MATRIX_PRINT;
+		KFM_LINAL_AMOUNT_OF_PRINTS += 2;
 		for (unsigned int j = 0; j < matrix.getWidth(); j++) {
-			os << matrix.getElement(i, j) << "\t\t";
+			os << matrix.getElement(i, j) << KFM_LINAL_TABS_FOR_MATRIX_PRINT;
 		}
 		if (i != matrix.getHeight() - 1) {
-			os << "||\n";
+			os << "|| * \n";
 		}
-		else {
-			os << "||";
-		}
+		KFM_LINAL_AMOUNT_OF_PRINTS -= 2;
 	}
+	os << "|| ** \n";
 	return os;
 }
 
@@ -626,22 +653,19 @@ public:
 		return Matrix<T>(*this);
 	}
 	
+	// Initialisation of default Vector !!! VERY, VERY UNSAFE, NEVER USE IT !!!
+	Vector<T>() : Matrix<T>() {}
 	// Initialisation of Vector with "coords = 0" and dimension "dimension"
 	Vector<T>(unsigned int dimension) : Matrix<T>(dimension, 1) {
 		this->dimension = dimension;
 	}
-	
+	// Initialisation of Vector with "coords = 0" and dimension "dimension" and fiiled with value needed_value
+	Vector<T>(unsigned int dimension, const T& value) : Matrix<T>(dimension, 1, value) {
+		this->dimension = dimension;
+	}
 	// Initialisation of Vector with Matrix, that matches with given "needed_matrix"
 	Vector<T>(const Matrix<T>& needed_matrix) : Matrix<T>(needed_matrix) {
 		this->dimension = needed_matrix.getSize();
-	}
-	
-	// Initialisation of Vector with given coordinates as "coords_value" and dimension "dimension"
-	Vector<T>(unsigned int dimension, T const* const coords_value) : Matrix<T>(dimension, 1) {
-		this->dimension = dimension;
-		for (unsigned int i = 0; i < dimension; i++) {
-			this->data[i][0] = coords_value[i];
-		}
 	}
 	
 	// Initialisation clone of Vector "vector" (COPY CONSTRUCTOR)
@@ -668,12 +692,12 @@ public:
 	}
 	
 	// Get multiplication of Vector and scalar
-	template<typename Y> Vector<T> getMultiplication(Y value) const {
+	template<typename Y> Vector<T> getMultiplication(const Y& value) const {
 		return Vector<T>(this->getMatrix() * value);
 	}
-		
+	
 	// Get division of Vector and scalar
-	template<typename Y> Vector<T> getDivision(Y value) const {
+	template<typename Y> Vector<T> getDivision(const Y& value) const {
 		return Vector<T>(this->getMatrix() / value);
 	}
 	
@@ -699,21 +723,19 @@ public:
 		Y* b_coords = b.getElements();
 		
 		// Equation from Wikipedia
-		T* result_coords = new T[3];
-		result_coords[0] = a_coords[1] * b_coords[2] - b_coords[1] * a_coords[2];
-		result_coords[1] = -(a_coords[0] * b_coords[2] - b_coords[0] * a_coords[2]);
-		result_coords[2] = a_coords[0] * b_coords[1] - b_coords[0] * a_coords[1];
+		Vector<T> result = Vector<T>(3);
 		
-		Vector<T> result = Vector<T>(3, result_coords);
+		result[0] = a_coords[1] * b_coords[2] - b_coords[1] * a_coords[2];
+		result[1] = -(a_coords[0] * b_coords[2] - b_coords[0] * a_coords[2]);
+		result[2] = a_coords[0] * b_coords[1] - b_coords[0] * a_coords[1];
 		
 		delete[] a_coords;
 		delete[] b_coords;
-		delete[] result_coords;
 		return result;
 	}
 	
 	// Get rotated Vector in 2 dimensions, angle in radians.
-	template <typename Y> Vector<T> getRotated(Y needed_angle) const {
+	template <typename Y> Vector<T> getRotated(const Y& needed_angle) const {
 		
 		if (dimension < 2) {
 			throw std::invalid_argument("Too few dimensions to perform 2d rotation");
@@ -732,7 +754,7 @@ public:
 		return result;
 	}
 	// Get rotated Vector in 3 dimensions, angle in radians, rotates by axis Z then axis Y
-	template <typename Y, typename H> Vector<T> getRotated(Y needed_angle_z, H needed_angle_y) {
+	template <typename Y, typename H> Vector<T> getRotated(const Y& needed_angle_z, const H& needed_angle_y) {
 		
 		if (dimension < 3) {
 			throw std::invalid_argument("Too few dimensions to perform 3d rotation");
@@ -834,11 +856,11 @@ public:
 		return this->getSubtraction(right);
 	}
 	
-	template <typename Y> Vector<T> operator * (Y value) const {
+	template <typename Y> Vector<T> operator * (const Y& value) const {
 		return this->getMultiplication(value);
 	}
 	
-	template <typename Y> Vector<T> operator / (Y value) const {
+	template <typename Y> Vector<T> operator / (const Y& value) const {
 		return this->getDivision(value);
 	}
 	
@@ -895,7 +917,7 @@ public:
 // 
 // Overloading operators, that cannot be overloaded inside of Vector
 //
-template<typename T, typename Y> Vector<T> operator * (Y value, const Vector<T>& right) {
+template<typename T, typename Y> Vector<T> operator * (const Y& value, const Vector<T>& right) {
 	return right.getMultiplication(value);
 }
 

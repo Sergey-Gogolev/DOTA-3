@@ -146,22 +146,22 @@ int main() {
 	x.print();
 	
 	cout << "Operator == overload check:\n";
-	cout << "\tx == x: " << (x == x) << "\n";
-	cout << "\tx == x * 2: " << (x == x * 2) << "\n";
+	cout << "\tx == x: " << (x == x);
+	cout << "\tx == x * 2: " << (x == x * 2);
 	
 	cout << "Operator != overload check:\n";
-	cout << "\tx != x: " << (x != x) << "\n";
-	cout << "\tx != x / 2: " << (x != x / 2) << "\n";
+	cout << "\tx != x: " << (x != x);
+	cout << "\tx != x / 2: " << (x != x / 2);
 	
 	cout << "Operator << overload check, cout << x << \" GG \\n\":\n";
-	cout << x  << " GG \n"<< "\n";
+	cout << x  << " GG \n" << '\n';
 	
 	cout << "Operator [] overload check, cout << x[1][2] << \'\\n\':\n";
-	cout << x[1][2] << '\n';
+	cout << x[1][2];
 	
 	cout << "Operator [] overload check, x[1][2] = -0.54:\n";
 	x[1][2] = -0.54;
-	cout << x << '\n';
+	cout << x;
 	
 	std::cin >> tmp;
 	
@@ -244,12 +244,7 @@ int main() {
 	
 	for (unsigned int i = 0; i < length_array_vector; i++) {
 		cout << i << " ";
-		array_vector[i] = new Vector(42, (double[]){ 3, 3, 3, 3, 3, 3, 3,
-													 3, 3, 3, 3, 3, 3, 3,
-													 3, 3, 3, 3, 3, 3, 3,
-													 3, 3, 3, 3, 3, 3, 3,
-													 3, 3, 3, 3, 3, 3, 3,
-													 3, 3, 3, 3, 3, 3, 3});
+		array_vector[i] = new Vector(42, (double)3);
 	}
 	cout << "\n";
 	
@@ -262,11 +257,11 @@ int main() {
 	cout << "Matrix<bool> initialisation:\n";
 	cout << std::boolalpha;
 	Matrix<bool> bool_matrix(3, 3);
-	cout << bool_matrix << '\n';
+	cout << bool_matrix;
 	
 	cout << "Matrix<char> initialisation:\n";
 	Matrix<char> char_matrix(3, 3);
-	cout << char_matrix << '\n';
+	cout << char_matrix;
 	
 	cout << "Matrix<bool>[i][i] = true:\n";
 	for (unsigned int i = 0; i < bool_matrix.getHeight(); i++) {
@@ -276,37 +271,37 @@ int main() {
 			}
 		}
 	}
-	cout << bool_matrix << '\n';
+	cout << bool_matrix;
 
 	cout << "Matrix<char> fill with \':\':\n";
 	char_matrix.fill(':');
-	cout << char_matrix << '\n';
+	cout << char_matrix;
 	
 	cout << "Matrix<char> + Matrix<bool>:\n";
-	cout << char_matrix + bool_matrix << '\n';
+	cout << char_matrix + bool_matrix;
 	
 	cout << "Matrix<bool> + Matrix<char>:\n";
-	cout << bool_matrix + char_matrix << '\n';
+	cout << bool_matrix + char_matrix;
 	
 	cout << "Matrix<char> * 5:\n";
-	cout << char_matrix * 5 / 2<< '\n';
+	cout << char_matrix * 5 / 2;
 	
 	cout << "Matrix<char> * Matrix<bool>:\n";
-	cout << char_matrix * bool_matrix << '\n';
+	cout << char_matrix * bool_matrix;
 	
 	cout << "Get determinant of Matrix<bool>:\n";
 	cout << bool_matrix.getDeterminant() << '\n';
 	
 	cout << "Get adjugated Matrix of Matrix<bool>:\n";
-	cout << bool_matrix.getAdjugated() << '\n';
+	cout << bool_matrix.getAdjugated();
 	
 	cout << "Matrix<short> filled with zeros:\n";
 	Matrix<short> short_matrix(3, 3);
-	cout << short_matrix << '\n';
+	cout << short_matrix;
 	
 	cout << "Matrix<bool> filled with zeros:\n";
 	Matrix<bool> zeros_bool_matrix(3, 3);
-	cout << zeros_bool_matrix << '\n';
+	cout << zeros_bool_matrix;
 	
 	cout << "Matrix<short> == Matrix<bool> filled with zeros:\n";
 	cout << (short_matrix == zeros_bool_matrix) << '\n';
@@ -316,35 +311,47 @@ int main() {
 	
 	cout << "Matrix<string> initialisation:\n";
 	Matrix<string> string_matrix(3, 3);
-	cout << string_matrix << '\n';
+	cout << string_matrix;
 	
 	cout << "Matrix<string> fill with \"sigma\" and Matrix<string>[1][1] = \"fijma\":\n";
 	string_matrix.fill("sigma");
 	string_matrix[1][1] = "fijma";
-	cout << string_matrix << '\n';
+	cout << string_matrix;
 	
 	cout << "Matrix<string> + Matrix<string> filled with \"gg wp\":\n";
 	Matrix<string> ggwp_matrix(3, 3);
 	ggwp_matrix.fill("gg wp");
-	cout << string_matrix + ggwp_matrix << '\n';
+	cout << string_matrix + ggwp_matrix;
 	
 	cout << "Matrix<unsigned int> filled with 228:\n";
 	Matrix<unsigned int> unsignedInt_matrix(3, 3);
 	unsignedInt_matrix.fill(228);
-	cout << unsignedInt_matrix << '\n';
+	cout << unsignedInt_matrix;
 	
 	cout << "Matrix<long long int> filled with 42:\n";
 	Matrix<long long int> longLongInt_matrix(3, 3);
 	longLongInt_matrix.fill(42);
-	cout << longLongInt_matrix << '\n';
+	cout << longLongInt_matrix;
 	
 	cout << "Type conversion check: (Matrix<char>)Matrix<unsigned int>:\n";
 	Matrix<char> result_of_conversion = (Matrix<char>)unsignedInt_matrix;
-	cout << result_of_conversion << '\n';
+	cout << result_of_conversion;
 	
 	cout << "Matrix<unsigned int> == Matrix<long long int>:\n";
 	cout << (unsignedInt_matrix == longLongInt_matrix) << '\n';
-
+		
+	cout << "Matrix<Matrix<double>> initialisation:\n";
+	Matrix<Matrix<double>> matrix_matrix(4, 3, Matrix<double>(4, 3, -0.5));
+	cout << matrix_matrix;
+	
+	cout << "Matrix<Matrix<Matrix<double>>> initialisation:\n";
+	Matrix<Matrix<Matrix<double>>> giga_matrix(2, 2, Matrix<Matrix<double>>(4, 3, Matrix<double>(4, 3, -1)));
+	cout << giga_matrix;
+	
+	cout << "Matrix<Vector<char>> initialisation:\n";
+	Matrix<Vector<char>> vector_matrix(3, 4, Vector<char>(5, 'V'));
+	cout << vector_matrix;
+	
 	cout << "Vector<char> initialisation:\n";
 	Vector<char> char_vector(3);
 	cout << char_vector << '\n';
@@ -369,6 +376,24 @@ int main() {
 	
 	cout << "vector multiplication of Vector<bool> filled with true with Vector<char>:\n";
 	cout << true_vector.get_vector_multiplication(char_vector) << '\n';
+	
+	cout << "Vector<Vector<char>> initialisation:\n";
+	Vector<Vector<char>> vector_vector(3, Vector<char>(3, 'S'));
+	cout << vector_vector << '\n';
+	
+	cout << "Vector<Vector<Vector<Vector<char>>>> initialisation:\n";
+	Vector<Vector<Vector<Vector<char>>>> veryGiga_vector( 2, Vector<Vector<Vector<char>>>(3, Vector<Vector<char>>(3, Vector<char>(3, 'S'))) );
+	cout << veryGiga_vector << '\n';
+	
+	cout << "Vector<Vector<string>> initialisation:\n";
+	Vector<Vector<string>> string_vector_vector(3, Vector<string>(5, "fijma"));
+	cout << string_vector_vector << '\n';
+	
+	/* ATTEMPT WAS SUCCESFUL, KEEP IN MIND, DON'T DO STAFF LIKE THIS, IDK HOW TO FIX IT NOW
+	cout << "Attempt to destroy type safety, Vector<Vector<char>> corrupt_vector(3, Vector<int>(5, 1)):\n";
+	Vector<Vector<char>> corrupt_vector(3, Vector<int>(5, 1));
+	cout << corrupt_vector << '\n';
+	*/
 	
 	
 	return 0;
