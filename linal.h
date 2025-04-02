@@ -20,13 +20,13 @@ protected:
 	T** data;
 
 public: 
-	// Fill Matrix with default_value
-	void clear(T default_value) {
+	// Initialise Matrix's data with given value
+	void clear(const T& needed_value) {
 		this->data = new T*[this->height];
 		for (unsigned int i = 0; i < this->height; i++) {
 			this->data[i] = new T[this->width];
 			for (unsigned int j = 0; j < this->width; j++) {
-				this->data[i][j] = default_value;
+				this->data[i][j] = needed_value;
 			}
 		}
 	}
@@ -39,7 +39,12 @@ public:
 		// T{} --- is a default value of type T
 		clear(T{});
 	}
-	
+	// Basic initialisation of Matrix filled with given value
+	Matrix<T>(unsigned int height, unsigned int width, const T& needed_value) {
+		this->height = height;
+		this->width = width;
+		clear(needed_value);
+	}
 	// Clone Matrix initialisation (Initialise Matrix identical to "root_matrix") (COPY CONSTRUCTOR)
 	Matrix<T>(const Matrix<T>& root_matrix) {
 		this->height = root_matrix.height;
@@ -287,7 +292,7 @@ public:
 	}
 	
 	// Fill Matrix with value
-	void fill(T value) {
+	void fill(const T& value) {
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
 				this->data[i][j] = value;
@@ -358,7 +363,7 @@ public:
 	}
 	
 	// Get multiplication of Matrix and scalar of type Y
-	template <typename Y> Matrix<T> getMultiplication(Y b) const {
+	template <typename Y> Matrix<T> getMultiplication(const Y& b) const {
 		
 		// Taking height of Matrix "a" and width of Matrix "a"
 		Matrix<T> result = Matrix<T>(this->height, this->width);
@@ -373,7 +378,7 @@ public:
 	}
 	
 	// Get division of Matrix and scalar of type Y
-	template <typename Y> Matrix<T> getDivision(Y b) const {
+	template <typename Y> Matrix<T> getDivision(const Y& b) const {
 		
 		if (b == 0) {
 			throw std::invalid_argument("dividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)");
@@ -480,6 +485,18 @@ public:
 		this->width = right.getWidth();
 		return *this;
 	}
+	template <typename Y> Matrix<T>& operator /= (const Y& b) {
+		if (b == 0) {
+			throw std::invalid_argument("/= division by ZERO!");
+		}
+		
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				this->data[i][j] /= b;
+			}
+		}
+		return *this;
+	}
 	
 	template <typename Y> Matrix<T> operator + (const Matrix<Y>& right) const {
 		return this->getSum(right);
@@ -490,10 +507,10 @@ public:
 	template <typename Y> Matrix<T> operator * (const Matrix<Y>& right) const {
 		return this->getMultiplication(right); 
 	}
-	template <typename Y> Matrix<T> operator * (Y value) const {
+	template <typename Y> Matrix<T> operator * (const Y& value) const {
 		return this->getMultiplication(value);
 	}
-	template <typename Y> Matrix<T> operator / (Y value) const {
+	template <typename Y> Matrix<T> operator / (const Y& value) const {
 		return this->getDivision(value);
 	}
 	
