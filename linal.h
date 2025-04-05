@@ -506,6 +506,14 @@ public:
 		this->width = right.getWidth();
 		return *this;
 	}
+	template <typename Y> Matrix<T>& operator *= (const Y& b) {
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				this->data[i][j] *= b;
+			}
+		}
+		return *this;
+	}
 	template <typename Y> Matrix<T>& operator /= (const Y& b) {
 		if (b == 0) {
 			throw std::invalid_argument("/= division by ZERO!");
@@ -844,6 +852,26 @@ public:
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
 				this->data[i][j] -= right.getElement(i, j);
+			}
+		}
+		return *this;
+	}
+	template <typename Y> Vector<T>& operator *= (const Y& b) {
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				this->data[i][j] *= b;
+			}
+		}
+		return *this;
+	}
+	template <typename Y> Vector<T>& operator /= (const Y& b) {
+		if (b == 0) {
+			throw std::invalid_argument("/= division by ZERO!");
+		}
+		
+		for (unsigned int i = 0; i < this->height; i++) {
+			for (unsigned int j = 0; j < this->width; j++) {
+				this->data[i][j] /= b;
 			}
 		}
 		return *this;
