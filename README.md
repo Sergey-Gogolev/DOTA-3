@@ -2,7 +2,7 @@
 
 ## Version
 
-As for now, it's in very-very prototype version 0.1.2.
+As for now, it's in very-very prototype version 0.1.3.
 
 ## Reason
 This project dedicated to make basic game engine.
