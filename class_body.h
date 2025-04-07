@@ -4,9 +4,9 @@
 class Body
 {
 protected:
-    Vector position;
-    Vector velosity;
-    Vector acceleration;
+    Vector<double> position;
+    Vector<double> velosity;
+    Vector<double> acceleration;
 
     sf::CircleShape circle;
 
@@ -15,7 +15,7 @@ private:
 
 public:
 
-    Body(Vector pos, Vector vel, Vector acs): position(pos), velosity(vel), acceleration(acs)
+    Body(Vector<double> pos, Vector<double> vel, Vector<double> acs): position(pos), velosity(vel), acceleration(acs)
     {
         EnableHitbox = true;
 
@@ -26,40 +26,54 @@ public:
         circle.setPointCount(18);
     };
 
-    Body(): Body(Vector(2), Vector(2), Vector(2)){};
+    Body(const Body& that)
+    {
+        position = that.position;
+        velosity = that.velosity;
+        acceleration = that.acceleration;
+        circle = that.circle;
+        EnableHitbox = that.EnableHitbox;
+    }
+
+    Body(Body&& that)
+    {
+        *this = std::move(that);
+    }
+
+    Body(): Body(Vector<double>(2), Vector<double>(2), Vector<double>(2)){};
 
     ~Body(){};
 
     ////////////////////////
 
-    virtual void SetPos(const Vector& pos)
+    void SetPos(const Vector<double>& pos)
     {
         position = pos;
     }
 
-    virtual void SetVel(const Vector& vel)
+    void SetVel(const Vector<double>& vel)
     {
         velosity = vel;
     }
 
-    virtual void SetAcs(const Vector& acs)
+    void SetAcs(const Vector<double>& acs)
     {
         acceleration = acs;
     }
 
     /////////////////////////
 
-    Vector GetPos() const
+    Vector<double> GetPos() const
     {
         return position;
     }
 
-    Vector GetVel() const
+    Vector<double> GetVel() const
     {
         return velosity;
     }
 
-    Vector GetAcs() const
+    Vector<double> GetAcs() const
     {
         return acceleration;
     }
@@ -72,17 +86,17 @@ public:
         velosity += acceleration * dt;
     }
 
-    virtual void AddPos(const Vector dpos)
+    virtual void AddPos(const Vector<double> dpos)
     {
         position += position;
     }
 
-    virtual void AddVel(const Vector dvel)
+    void AddVel(const Vector<double> dvel)
     {
         velosity += dvel;
     }
 
-    virtual void AddAcs(const Vector dacs)
+    void AddAcs(const Vector<double> dacs)
     {
         acceleration += dacs;
     }
@@ -111,4 +125,26 @@ public:
         this->circle.setTexture(texture);
     }
 
+    ///////////////////////
+
+    const Body& operator= (const Body& that)
+    {
+        if (this == &that)
+            return *this;
+        position = that.position;
+        velosity = that.velosity;
+        acceleration = that.acceleration;
+        circle = that.circle;
+        EnableHitbox = that.EnableHitbox;
+        return *this;
+    }
+
+    void operator=(Body&& that)
+    {
+        std::swap(position, that.position);
+        std::swap(velosity, that.velosity);
+        std::swap(acceleration, that.acceleration);
+        std::swap(circle, that.circle);
+        std::swap(EnableHitbox, that.EnableHitbox);
+    }
 };
