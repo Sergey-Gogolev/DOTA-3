@@ -681,9 +681,15 @@ public:
 	Vector<T>(unsigned int dimension) : Matrix<T>(dimension, 1) {
 		this->dimension = dimension;
 	}
-	// Initialisation of Vector with "coords = 0" and dimension "dimension" and fiiled with value needed_value
+	// Initialisation of Vector with "coords = default_value" and dimension "dimension" and fiiled with value needed_value
 	Vector<T>(unsigned int dimension, const T& value) : Matrix<T>(dimension, 1, value) {
 		this->dimension = dimension;
+	}
+	// Initialisation of Vector with given coords
+	Vector<T>(unsigned int dimension, const T* const coords) : Matrix<T>(dimension, 1) {
+		for (unsigned int i = 0; i < dimension; i++) {
+			this->data[i][0] = coords[i];
+		}
 	}
 	// Initialisation of Vector with Matrix, that matches with given "needed_matrix"
 	Vector<T>(const Matrix<T>& needed_matrix) : Matrix<T>(needed_matrix) {

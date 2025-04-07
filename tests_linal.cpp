@@ -108,6 +108,10 @@ int main() {
 	cout << "Get rotated on pi / 2 by Z, and pi / 2 by Y:\n";
 	cout << a.getRotated(PI / 2, PI / 2) << '\n';
 	
+	cout << "Check Vector initialisation through initialiser{}, Vector check_initialiser(3, (double[]){1, 2, 3}):\n";
+	Vector<double> check_initialiser(3, (double[]){ 1, 2, 3 });
+	cout << check_initialiser << '\n';
+	
 	cout << " --- Advanced Matrix Part --- \n";
 	cout << "Operator + overload with matrix check, x + y + y:\n";
 	Matrix operator_sum_xy = x + y + y;
