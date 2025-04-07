@@ -37,6 +37,8 @@ public:
 	
 	// Default initialisation of Matrix !!!VERY, VERY UNSAFE, NEVER USE IT!!!
 	Matrix<T>() {
+		this->height = 0;
+		this->width = 0;
 		this->data = nullptr;
 	}
 	// Basic initialisation of Matrix filled with default values
@@ -80,6 +82,10 @@ public:
 				this->data[i][j] = (T)root_matrix.getElement(i, j);
 			}
 		}
+	}
+	// (MOVE CONSTRUCTOR)
+	Matrix<T>(Matrix<T>&& tmp_matrix) {
+		(*this) = std::move(tmp_matrix);
 	}
 	
 	// Obviously destructor
@@ -447,7 +453,13 @@ public:
 		}
 		return *this;
 	}
-	
+	// Move assignment
+	Matrix<T>& operator = (Matrix<T>&& right) {
+		std::swap(this->height, right.height);
+		std::swap(this->width, right.width);
+		std::swap(this->data, right.data);
+		return (*this);
+	}
 	template <typename Y> Matrix<T>& operator += (const Matrix<Y>& right) {
 		
 		// Basic checks
@@ -662,7 +674,9 @@ public:
 	}
 	
 	// Initialisation of default Vector !!! VERY, VERY UNSAFE, NEVER USE IT !!!
-	Vector<T>() : Matrix<T>() {}
+	Vector<T>() : Matrix<T>() {
+		this->dimension = 0;
+	}
 	// Initialisation of Vector with "coords = 0" and dimension "dimension"
 	Vector<T>(unsigned int dimension) : Matrix<T>(dimension, 1) {
 		this->dimension = dimension;
@@ -679,6 +693,10 @@ public:
 	// Initialisation clone of Vector "vector" (COPY CONSTRUCTOR)
 	Vector<T>(const Vector<T>& vector) : Matrix<T>(vector) {
 		this->dimension = vector.getDimension();
+	}
+	// (MOVE CONSTRUCTOR)
+	Vector<T>(Vector<T>&& tmp_vector) {
+		(*this) = std::move(tmp_vector);
 	}
 	
 	// Obviously destructor of Vector
@@ -800,7 +818,7 @@ public:
 	// Operators overloading
 	// 
 	// Algebraic operators overloading 
-	template <typename Y> Vector<T>& operator = (const Vector<Y>& right) {
+	Vector<T>& operator = (const Vector<T>& right) {
 		
 		// Check self-assignment
 		if (this == &right) {
@@ -827,6 +845,14 @@ public:
 			}
 		}
 		return *this;
+	}
+	// Move assignment
+	Vector<T>& operator = (Vector<T>&& right) {
+		std::swap(this->height, right.height);
+		std::swap(this->width, right.width);
+		std::swap(this->data, right.data);
+		std::swap(this->dimension, right.dimension);
+		return (*this);
 	}
 	template <typename Y> Vector<T>& operator += (const Vector<Y>& right) {
 		
