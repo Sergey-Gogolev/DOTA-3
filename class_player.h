@@ -15,26 +15,29 @@ protected:
     double ArmorPoints;
     double MovementSpeed;
 
-    double ls_a[2] = {1, 0};
-    double us_a[2] = {0, 1};
-    Vector ls = Vector(2, ls_a);
-    Vector us = Vector(2, us_a);
+    Vector<double> cambox = Vector(2);
+    Vector<double> ls = Vector(2);
+    Vector<double> us = Vector(2);
 public:
 
-    Player(Vector pos, Vector vel, Vector acc, unsigned int LVL, double MHP, double MMS, double MS, double ARM): CurrentLevel(LVL), MaxHealthPoints(MHP), MaxMovementSpeed(MMS), MovementSpeed(MS), ArmorPoints(ARM)
+    Player(Vector<double> pos, Vector<double> vel, Vector<double> acc, unsigned int LVL, double MHP, double MMS, double MS, double ARM): CurrentLevel(LVL), MaxHealthPoints(MHP), MaxMovementSpeed(MMS), MovementSpeed(MS), ArmorPoints(ARM)
     {
         Alive = true;
         HealthPoints = MaxHealthPoints;
         ExperiencePoints = 0;
+        EnableHitbox = true;
+        HitboxRadius = 20;
 
-        circle.setRadius(30);
+        circle.setRadius(20);
         circle.setOutlineThickness(2);
-        circle.setFillColor(sf::Color(220,180,250));
-        circle.setOutlineColor(sf::Color(0,80,250));
+        circle.setFillColor(sf::Color(0,0,250));
+        circle.setOutlineColor(sf::Color(0,0,250));
         circle.setPointCount(18);
+
+        ls[0] = 1; ls[1] = 0; us[0] = 0; us[1] = 1;
     };
 
-    Player(): Player(Vector(2), Vector(2), Vector(2), 1, 100.0, 100.0, 1.0, 10.0) {};
+    Player(): Player(Vector<double>(2), Vector<double>(2), Vector<double>(2), 1, 100.0, 100.0, 3.0, 10.0) {};
 
     ~Player(){};
 
@@ -70,6 +73,11 @@ public:
         ArmorPoints = ARM;
     }
 
+    void SetCamBox(double a, double b)
+    {
+        cambox[0] = a;
+        cambox[1] = b;
+    }
 //////////////////////////////////////////////// Get
 
     unsigned int GetLVL() const
@@ -146,15 +154,63 @@ public:
         return true;
     };
 
-    void AddPos(const Vector dpos)
+    void AddPos(const Vector<double> dpos)
     {
         position += dpos * MovementSpeed;
     }
 
-    void CalcMove(const double dt)
+    void CalcMove(const double dt, std::vector<Body>& Objects, sf::Event& event)
     {
-        position += MovementSpeed * (velosity * dt + 0.5 * acceleration * dt * dt);
-        velosity += acceleration * dt;
+        Vector<double> DeltaPosition = MovementSpeed * (velosity * dt + 0.5 * acceleration * dt * dt);
+        Vector<double> DeltaVelosity = acceleration * dt;
+        if (event.type == sf::Event::KeyPressed)
+        {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+                DeltaPosition -= ls * MovementSpeed;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+                DeltaPosition += us * MovementSpeed;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+                DeltaPosition += ls * MovementSpeed;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+                DeltaPosition -= us * MovementSpeed;
+        }
+
+        if (std::abs((position + DeltaPosition)[0]) <= cambox[0])
+            position[0] += DeltaPosition[0];
+        else
+        {
+            unsigned n = Objects.size();
+            Vector<double>  XCamOffset(2); XCamOffset[0] = -DeltaPosition[0];
+            for (unsigned i = 0; i < n; i++)
+                Objects[i].AddPos(XCamOffset);
+        }
+
+        if (std::abs((position + DeltaPosition)[1]) <= cambox[1])
+            position[1] += DeltaPosition[1];
+        else
+        {
+            unsigned n = Objects.size();
+            Vector<double>  YCamOffset(2); YCamOffset[1] = -DeltaPosition[1];
+            for (unsigned i = 0; i < n; i++)
+                Objects[i].AddPos(YCamOffset);
+        }
+    }
+
+    void CheckCollisions(const std::vector<Body>& Objects)
+    {
+        unsigned n = Objects.size();
+        if (!EnableHitbox)
+            return;
+        unsigned m = 0;
+        for (unsigned i = 0; i < n; i++)
+        {
+            Vector<double> distance = position - Objects[i].GetPos();
+            double mod = std::pow(std::pow(distance[0],2) + std::pow(distance[1], 2), 0.5);
+            if (Objects[i].GetHitbox() && (mod <= HitboxRadius + Objects[i].GetHitboxRadius()) ){
+                std::cout << "\n  OUCH! " << i << " " << mod;
+            }
+        }
+ //       std::cout << "  OUCH! x" << m;
     }
 };
 

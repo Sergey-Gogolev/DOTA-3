@@ -18,14 +18,14 @@ namespace Melon
 class Ball
 {
 public:
-    Vector position;
+    Vector<double> position;
     int radius;
-    Vector velosity;
+    Vector<double> velosity;
     int power; // шарики могут наносить разный урон
     sf::CircleShape circle;
 
 public:
-    Ball(): position(Vector(2)), velosity(Vector(2))
+    Ball(): position(Vector<double>(2)), velosity(Vector<double>(2))
     {
         circle.setRadius(10);
         circle.setOutlineThickness(2);
@@ -46,7 +46,7 @@ public:
     //где окажетстя шарик через время dt
     void move(double dt)
     {
-        Vector new_position = (this->position) + dt * (this->velosity);
+        Vector<double> new_position = (this->position) + dt * (this->velosity);
 
         //шарик не должен попасть за границы поля, поэтому от стенок он должен отскакивать
         //модуль скорости шарика при этом сохраняется

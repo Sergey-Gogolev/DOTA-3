@@ -3,10 +3,8 @@
 int main()
 {
     double dt = 0.001;
-    double ls_a[2] = {1, 0};
-    double us_a[2] = {0, 1};
-    Vector ls = Vector(2, ls_a);
-    Vector us = Vector(2, us_a);
+    Vector<double> ls = Vector(2); ls[0] = 1; ls[1] = 0;
+    Vector<double> us = Vector(2); us[0] = 0; us[1] = 1;
     Body chel1;
     Body chel2;
     chel1.SetAcs(500 * ls + 500 * us);

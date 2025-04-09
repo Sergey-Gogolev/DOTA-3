@@ -10,6 +10,7 @@ protected:
 
     sf::CircleShape circle;
 
+    double HitboxRadius = 10;
     bool EnableHitbox;
 private:
 
@@ -18,12 +19,11 @@ public:
     Body(Vector<double> pos, Vector<double> vel, Vector<double> acs): position(pos), velosity(vel), acceleration(acs)
     {
         EnableHitbox = true;
-
-        circle.setRadius(30);
-        circle.setOutlineThickness(2);
-        circle.setFillColor(sf::Color(220,180,250));
-        circle.setOutlineColor(sf::Color(0,80,250));
-        circle.setPointCount(18);
+        circle.setRadius(HitboxRadius);
+        circle.setOutlineThickness(1);
+        circle.setFillColor(sf::Color(255,0,0));
+        circle.setOutlineColor(sf::Color(0,0,0));
+        circle.setPointCount(10);
     };
 
     Body(const Body& that)
@@ -61,6 +61,11 @@ public:
         acceleration = acs;
     }
 
+    void SetHitboxRadius(const double r)
+    {
+        HitboxRadius = r;
+    }
+
     /////////////////////////
 
     Vector<double> GetPos() const
@@ -78,17 +83,27 @@ public:
         return acceleration;
     }
 
+    bool GetHitbox() const
+    {
+        return EnableHitbox;
+    }
+
+    double GetHitboxRadius() const
+    {
+        return HitboxRadius;
+    }
+
     ////////////////////////
 
     virtual void CalcMove (const double dt)
     {
         position += velosity * dt + 0.5 * acceleration * dt * dt;
-        velosity += acceleration * dt;
+        velosity += acceleration    * dt;
     }
 
-    virtual void AddPos(const Vector<double> dpos)
+    void AddPos(const Vector<double> dpos)
     {
-        position += position;
+        position += dpos;
     }
 
     void AddVel(const Vector<double> dvel)
@@ -105,7 +120,8 @@ public:
 
     void SetCircle(const unsigned int R, const unsigned int OT, const sf::Color FC, const sf::Color OC, const unsigned int PC)
     {
-        circle.setRadius(R);
+        HitboxRadius = R;
+        circle.setRadius(HitboxRadius);
         circle.setOutlineThickness(OT);
         circle.setFillColor(FC);
         circle.setOutlineColor(OC);
