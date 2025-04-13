@@ -1,4 +1,4 @@
-#pragma ones
+#pragma once
 
 #ifndef KFM_LINAL_H
 #define KFM_LINAL_H

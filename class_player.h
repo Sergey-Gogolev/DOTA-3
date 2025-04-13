@@ -1,4 +1,4 @@
-#pragma ones
+#pragma once
 
 #include "linal.h"
 #include <SFML/Graphics.hpp>
