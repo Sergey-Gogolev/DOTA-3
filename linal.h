@@ -1,3 +1,5 @@
+#pragma ones
+
 #ifndef KFM_LINAL_H
 #define KFM_LINAL_H
 

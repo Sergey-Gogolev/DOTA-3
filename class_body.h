@@ -1,3 +1,5 @@
+#pragma ones
+
 #include "linal.h"
 #include <SFML/Graphics.hpp>
 
