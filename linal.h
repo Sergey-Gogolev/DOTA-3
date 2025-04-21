@@ -1,10 +1,12 @@
-#pragma once
-
 #ifndef KFM_LINAL_H
 #define KFM_LINAL_H
 
 #include <cmath>
 #include <iostream>
+
+#ifndef KFLINALG_DEBUG_MODE
+#define KFLINALG_DEBUG_MODE 0
+#endif
 
 #ifndef FLOAT_THRESHOLD
 #define FLOAT_THRESHOLD 0.0001
@@ -223,10 +225,11 @@ public:
 	// Get determinant of Matrix by first column and first row
 	T getDeterminant() const {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		if (this->height != this->width) {
 			throw std::invalid_argument("determinant doesn't exist, not square Matrix.");
 		}
-		
+#endif
 		// if there's only one element in Matrix
 		if (this->height == 1) {
 			return this->data[0][0];
@@ -289,9 +292,11 @@ public:
 	
 	// Get inverted Matrix
 	Matrix<T> getInverted() const {
+#if KFLINALG_DEBUG_MODE > 0
 		if (this->getDeterminant() == 0) {
 			throw std::invalid_argument("determinant 0, inverted Matrix doesn't exist");
 		}
+#endif
 		return  this->getAdjugated() / this->getDeterminant();
 	}
 	
@@ -330,11 +335,12 @@ public:
 	// Get sum with matrix
 	template <typename Y> Matrix<T> getSum(const Matrix<Y>& b) const {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		// Basic checks
 		if (this->height != b.getHeight() || this->width != b.getWidth()) {
 			throw std::invalid_argument("summing wrong sizes Matrix");
 		}
-		
+#endif
 		// Taking width and height of Matrix "a"
 		Matrix<T> result = Matrix<T>(this->height, this->width);
 		
@@ -349,11 +355,12 @@ public:
 	// Get subtraction of two matrix
 	template <typename Y> Matrix<T> getSubtraction(const Matrix<Y>& b) const {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		// Basic checks
 		if (this->height != b.getHeight() || this->width != b.getWidth()) {
 			throw std::invalid_argument("subtracting wrong sizes Matrix");
 		}
-		
+#endif
 		// Taking width and height of Matrix "a"
 		Matrix<T> result = Matrix<T>(this->height, this->width);
 		
@@ -368,11 +375,12 @@ public:
 	// Get multiplication of two Matrix
 	template <typename Y> Matrix<T> getMultiplication(const Matrix<Y>& b) const {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		// Basic checks
 		if (this->width != b.getHeight()) {
 			throw std::invalid_argument("multiplying Matrix wrong sizes Matrix");
 		}
-		
+#endif
 		// Taking height of Matrix "a" and width of Matrix "b"
 		Matrix<T> result = Matrix<T>(this->height, b.getWidth());
 		
@@ -407,10 +415,11 @@ public:
 	// Get division of Matrix and scalar of type Y
 	template <typename Y> Matrix<T> getDivision(const Y& b) const {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		if (b == 0) {
 			throw std::invalid_argument("dividing impossible, ZERO, ZERO !!!!!!!!!!!!!!!!!!!!!!!!!!! (exiting)");
 		}
-		
+#endif
 		// Taking height of Matrix "a" and width of Matrix "a"
 		Matrix<T> result = Matrix<T>(this->height, this->width);
 		
@@ -464,11 +473,12 @@ public:
 	}
 	template <typename Y> Matrix<T>& operator += (const Matrix<Y>& right) {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		// Basic checks
 		if (this->height != right.getHeight() || this->width != right.getWidth()) {
 			throw std::invalid_argument("+= wrong sizes Matrix");
 		}
-		
+#endif
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
 				this->data[i][j] += (T)right.getElement(i, j);
@@ -478,11 +488,12 @@ public:
 	}
 	template <typename Y> Matrix<T>& operator -= (const Matrix<Y>& right) {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		// Basic checks
 		if (this->height != right.getHeight() || this->width != right.getWidth()) {
 			throw std::invalid_argument("-= wrong sizes Matrix");
 		}
-		
+#endif
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
 				this->data[i][j] -= (T)right.getElement(i, j);
@@ -493,10 +504,12 @@ public:
 	}
 	template <typename Y> Matrix<T>& operator *= (const Matrix<Y>& right) {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		// Basic checks
 		if (this->width != right.getHeight()) {
 			throw std::invalid_argument("*= wrong sizes Matrix");
 		}
+#endif
 		
 		T** result_data = new T*[this->height];
 		
@@ -529,9 +542,12 @@ public:
 		return *this;
 	}
 	template <typename Y> Matrix<T>& operator /= (const Y& b) {
+
+#if KFLINALG_DEBUG_MODE > 0
 		if (b == 0) {
 			throw std::invalid_argument("/= division by ZERO!");
 		}
+#endif
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
@@ -609,15 +625,19 @@ public:
 	
 	// Access operators overloading !!IS NOT MEMORY SAFE, BE EXTREMELY CAREFUL!!
 	T* operator [] (unsigned int index) {
+#if KFLINALG_DEBUG_MODE > 0
 		if (index >= height) {
 			throw std::invalid_argument("Array index exceeds boundaries of Matrix");
 		}
+#endif
 		return data[index];
 	}
 	T* operator [] (unsigned int index) const {
+#if KFLINALG_DEBUG_MODE > 0
 		if (index >= height) {
 			throw std::invalid_argument("Array index exceeds boundaries of Matrix");
 		}
+#endif
 		return data[index];
 	}
 	
@@ -738,20 +758,18 @@ public:
 	// Return result of scalar multiplication of this Vector to another !WORKS ONLY IN ORTOGONAL DEKART_SYSTEM OF COORDINAT!
 	template <typename Y> T get_scalar_multiplication(const Vector<Y>& b) const {
 		
-		Matrix<T> needed_coords_matrix = this->getTranspositioned() * b.getMatrix();
-		T* needed_elements = needed_coords_matrix.getElements();
-		T result = needed_elements[0];
-		
-		delete[] needed_elements;
-		return result;
+		Matrix<T> needed_coords_matrix = this->getTranspositioned() * static_cast<Matrix<T>>(b.getMatrix());
+		return needed_coords_matrix[0][0];
 	}
 	
 	// Return result of vector multiplication of this Vector to another !WORKS ONLY ON 3-DIMENSIONAL VECTORS!
 	template <typename Y> Vector<T> get_vector_multiplication(const Vector<Y>& b) const {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		if (dimension != 3) {
 			throw std::invalid_argument("Vector multiplication works only with 3 dimensional Vectors :/");
 		}
+#endif
 
 		T* a_coords = this->getElements();
 		Y* b_coords = b.getElements();
@@ -771,9 +789,11 @@ public:
 	// Get rotated Vector in 2 dimensions, angle in radians.
 	template <typename Y> Vector<T> getRotated(const Y& needed_angle) const {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		if (dimension < 2) {
 			throw std::invalid_argument("Too few dimensions to perform 2d rotation");
 		}
+#endif
 		Matrix<T> rotate_matrix(dimension, dimension);
 		for (unsigned int i = 2; i < dimension; i++) {
 			rotate_matrix[i][i] = 1;
@@ -790,9 +810,11 @@ public:
 	// Get rotated Vector in 3 dimensions, angle in radians, rotates by axis Z then axis Y
 	template <typename Y, typename H> Vector<T> getRotated(const Y& needed_angle_z, const H& needed_angle_y) {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		if (dimension < 3) {
 			throw std::invalid_argument("Too few dimensions to perform 3d rotation");
 		}
+#endif
 		Matrix<T> rotate_matrix_z(dimension, dimension);
 		for (unsigned int i = 0; i < dimension; i++) {
 			rotate_matrix_z[i][i] = 1;
@@ -802,7 +824,6 @@ public:
 		rotate_matrix_z[0][1] = -std::sin(needed_angle_z);
 		rotate_matrix_z[1][0] = std::sin(needed_angle_z);
 		rotate_matrix_z[1][1] = std::cos(needed_angle_z);
-		std::cout << "ROTATE_MATRIX_Z: \n" << rotate_matrix_z << '\n';
 
 		Matrix<T> rotate_matrix(dimension, dimension);
 		for (unsigned int i = 0; i < dimension; i++) {
@@ -813,10 +834,8 @@ public:
 		rotate_matrix[0][2] = std::sin(needed_angle_y);
 		rotate_matrix[2][0] = -std::sin(needed_angle_y);
 		rotate_matrix[2][2] = std::cos(needed_angle_y);
-		std::cout << "ROTATE_MATRIX_Y: \n" << rotate_matrix << '\n';
 
 		rotate_matrix *= rotate_matrix_z;
-		std::cout << "RESULT ROTATE MATRIX: \n" << rotate_matrix << '\n';
 		
 		Vector<T> result = Vector<T>(rotate_matrix * this->getMatrix());
 		return result;
@@ -864,10 +883,12 @@ public:
 	}
 	template <typename Y> Vector<T>& operator += (const Vector<Y>& right) {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		// Basic checks
 		if (this->height != right.getHeight()) {
 			throw std::invalid_argument("+= wrong sizes Vectors");
 		}
+#endif
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
@@ -878,10 +899,12 @@ public:
 	}
 	template <typename Y> Vector<T>& operator -= (const Vector<Y>& right) {
 		
+#if KFLINALG_DEBUG_MODE > 0
 		// Basic checks
 		if (this->height != right.getHeight()) {
 			throw std::invalid_argument("-= wrong sizes Vectors");
 		}
+#endif
 		
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
@@ -899,10 +922,12 @@ public:
 		return *this;
 	}
 	template <typename Y> Vector<T>& operator /= (const Y& b) {
+		
+#if KFLINALG_DEBUG_MODE > 0
 		if (b == 0) {
 			throw std::invalid_argument("/= division by ZERO!");
 		}
-		
+#endif
 		for (unsigned int i = 0; i < this->height; i++) {
 			for (unsigned int j = 0; j < this->width; j++) {
 				this->data[i][j] /= b;
@@ -958,15 +983,19 @@ public:
 	
 	// Access operators overloading
 	T& operator [] (unsigned int index) {
+#if KFLINALG_DEBUG_MODE > 0
 		if (index >= dimension) {
 			throw std::invalid_argument("Array index exceeds boundaries of Vector");
 		}
+#endif
 		return this->data[index][0];
 	}
 	const T& operator [] (unsigned int index) const {
+#if KFLINALG_DEBUG_MODE > 0
 		if (index >= dimension) {
 			throw std::invalid_argument("Array index exceeds boundaries of Vector");
 		}
+#endif
 		return this->data[index][0];
 	}
 	
