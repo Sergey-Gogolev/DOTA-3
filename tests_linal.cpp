@@ -102,8 +102,17 @@ int main() {
 	double module_a = a.getModule();
 	cout << "Module: " << module_a << "\n";
 	
-	cout << "Get rotated on pi Vector of Vector a:\n";
-	cout << a.getRotated(PI) << '\n';
+	cout << "Get rotated on pi / 2 Vector of Vector a:\n";
+	Vector rotated_a = a.getRotated(PI / 2);
+	cout << rotated_a << '\n';
+	
+	cout << "Get projection of Vector(1, 1, 0) onto Vector(1, 0, 0):\n";
+	double projection = Vector<double>(3, (double[]){ 1, 1, 0 }).getProjection(Vector<double>(3, (double[]){ 1, 0, 0 }));
+	cout << projection << '\n';
+	
+	cout << "Get projection of Vector(1, 0, 0) onto Vector(1, 1, 0):\n";
+	double projection_alt = Vector<double>(3, (double[]){ 1, 0, 0 }).getProjection(Vector<double>(3, (double[]){ 1, 1, 0 }));
+	cout << projection_alt << '\n';
 	
 	cout << "Get rotated on pi / 2 by Z, and pi / 2 by Y:\n";
 	cout << a.getRotated(PI / 2, PI / 2) << '\n';

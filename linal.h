@@ -786,6 +786,11 @@ public:
 		return result;
 	}
 	
+	// Get projection onto another Vector "axis"
+	template <typename Y> T getProjection(const Vector<Y>& axis) const {
+		return this->get_scalar_multiplication(axis) / axis.getModule();
+	}
+	
 	// Get rotated Vector in 2 dimensions, angle in radians.
 	template <typename Y> Vector<T> getRotated(const Y& needed_angle) const {
 		
