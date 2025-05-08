@@ -1,4 +1,4 @@
-#include "class_body.h"
+#include "class_body.cpp"
 
 int main()
 {
@@ -20,18 +20,17 @@ int main()
         sf::Event event;
         while (app.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed) //Если окно закрыли, надо заканчивать работу с ним
+            if (event.type == sf::Event::Closed)
                 app.close();
         }
         app.clear(sf::Color(250,250,220));
 
         chel1.CalcMove(dt);
         chel2.CalcMove(dt);
-        //Вызываем методы отрисовки для всех
+
         chel1.Draw(800,600,1,&app);
         chel2.Draw(800,600,1,&app);
 
-        // Заставляем окно обновиться и нарисовать всё
         app.display();
     }
     return 0;

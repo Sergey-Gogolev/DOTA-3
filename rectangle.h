@@ -1,34 +1,27 @@
-#pragma once
+#ifndef CLASS_RECTANGLE_H
+#define CLASS_RECTANGLE_H
 
-// просто прямоугольник
-// нужен для создания игрового поля
-class Rectangle {
-public:
-    Rectangle() = default;
-    Rectangle(double left, double up, double right, double down){
-        left_ = left;
-        right_ = right;
-        up_ = up;
-        down_ = down;
-    }
-    ~Rectangle() = default;
 
-    double GetLeft() const{
-        return left_;
-    }
-    double GetUp() const{
-        return up_;
-    }
-    double GetRight() const{
-        return right_;
-    }
-    double GetDown() const{
-        return down_;
-    }
-
+class Rectangle{
+ //   friend void Player::CalcMove(const double dt, std::vector<Body>& Objects, Rectangle& map, sf::Event& event);
 private:
-    double left_;
-    double up_;
-    double right_;
-    double down_;
+
+    sf::RectangleShape rectangle;
+    Vector<double> position;
+    double a;
+    double b;
+
+public:
+    Rectangle(double a, double b);
+    Rectangle();
+    ~Rectangle();
+
+    void SetRectangle(Vector<double> boarders, sf::Color c, unsigned int OT, Vector<double> p);
+    void AddPos(const Vector<double> DeltaPos);
+    Vector<double> GetPos() const;
+    double GetXSize() const;
+    double GetYSize() const;
+    void Draw(int w, int h, double scale, sf::RenderWindow* app);
+
 };
+#endif

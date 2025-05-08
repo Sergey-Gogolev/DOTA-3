@@ -1,168 +1,63 @@
-#pragma once
+#ifndef CLASS_BODY_H
+#define CLASS_BODY_H
 
-#include "linal.h"
 #include <SFML/Graphics.hpp>
+#include "linal.h"
+#include "rectangle.h"
+#include "chrono"
 
 class Body
 {
 protected:
+
     Vector<double> position;
     Vector<double> velosity;
     Vector<double> acceleration;
-
     sf::CircleShape circle;
-
     double HitboxRadius = 10;
-    bool EnableHitbox;
-private:
+    std::chrono::time_point<std::chrono::system_clock> LastHitTimestamp;
 
 public:
+    /////////////////////// Construcors
 
-    Body(Vector<double> pos, Vector<double> vel, Vector<double> acs): position(pos), velosity(vel), acceleration(acs)
-    {
-        EnableHitbox = true;
-        circle.setRadius(HitboxRadius);
-        circle.setOutlineThickness(1);
-        circle.setFillColor(sf::Color(255,0,0));
-        circle.setOutlineColor(sf::Color(0,0,0));
-        circle.setPointCount(10);
-    };
+    Body(Vector<double> pos, Vector<double> vel, Vector<double> acs);
+    Body(const Body& that);
+    Body(Body&& that);
+    Body();
+    ~Body();
 
-    Body(const Body& that)
-    {
-        position = that.position;
-        velosity = that.velosity;
-        acceleration = that.acceleration;
-        circle = that.circle;
-        EnableHitbox = that.EnableHitbox;
-    }
+    /////////////////////// Set smth
 
-    Body(Body&& that)
-    {
-        *this = std::move(that);
-    }
+    void SetPos(const Vector<double>& pos);
+    void SetVel(const Vector<double>& vel);
+    void SetAcs(const Vector<double>& acs);
+    void SetHitboxRadius(const double r);
 
-    Body(): Body(Vector<double>(2), Vector<double>(2), Vector<double>(2)){};
+    ///////////////////////// Get smth
 
-    ~Body(){};
+    Vector<double> GetPos() const;
+    Vector<double> GetVel() const;
+    Vector<double> GetAcs() const;
+    std::chrono::milliseconds GetLastHitTimestamp() const;
+    double GetHitboxRadius() const;
 
-    ////////////////////////
+    //////////////////////// Kinematiсs
 
-    void SetPos(const Vector<double>& pos)
-    {
-        position = pos;
-    }
+    virtual void CalcMove (const double dt, Rectangle& map);
+    void AddPos(const Vector<double> dpos);
+    void AddVel(const Vector<double> dvel);
+    void AddAcs(const Vector<double> dacs);
 
-    void SetVel(const Vector<double>& vel)
-    {
-        velosity = vel;
-    }
+    /////////////////////// Texture
 
-    void SetAcs(const Vector<double>& acs)
-    {
-        acceleration = acs;
-    }
+    void SetCircle(const unsigned int R, const unsigned int OT, const sf::Color FC, const sf::Color OC, const unsigned int PC);
+    void Draw(int w, int h, double scale, sf::RenderWindow* app);
+    void SetTexture(const sf::Texture* texture);
 
-    void SetHitboxRadius(const double r)
-    {
-        HitboxRadius = r;
-    }
+    /////////////////////// Operators overload
 
-    /////////////////////////
-
-    Vector<double> GetPos() const
-    {
-        return position;
-    }
-
-    Vector<double> GetVel() const
-    {
-        return velosity;
-    }
-
-    Vector<double> GetAcs() const
-    {
-        return acceleration;
-    }
-
-    bool GetHitbox() const
-    {
-        return EnableHitbox;
-    }
-
-    double GetHitboxRadius() const
-    {
-        return HitboxRadius;
-    }
-
-    ////////////////////////
-
-    virtual void CalcMove (const double dt)
-    {
-        position += velosity * dt + 0.5 * acceleration * dt * dt;
-        velosity += acceleration    * dt;
-    }
-
-    void AddPos(const Vector<double> dpos)
-    {
-        position += dpos;
-    }
-
-    void AddVel(const Vector<double> dvel)
-    {
-        velosity += dvel;
-    }
-
-    void AddAcs(const Vector<double> dacs)
-    {
-        acceleration += dacs;
-    }
-
-    ///////////////////////
-
-    void SetCircle(const unsigned int R, const unsigned int OT, const sf::Color FC, const sf::Color OC, const unsigned int PC)
-    {
-        HitboxRadius = R;
-        circle.setRadius(HitboxRadius);
-        circle.setOutlineThickness(OT);
-        circle.setFillColor(FC);
-        circle.setOutlineColor(OC);
-        circle.setPointCount(PC);
-    }
-
-    void Draw(int w, int h, double scale, sf::RenderWindow* app) //Рисуем кружочек в нужном месте. w и h - шрина и высота окна
-    {
-        circle.setPosition(w/2+ position.getElement(0,0)/scale-circle.getRadius(),h/2+position.getElement(1,0)/scale-circle.getRadius());
-        app->draw(circle);
-    }
-
-    void SetTexture(const sf::Texture* texture) //Уставливаем текстуру
-    {
-        this->circle.setOutlineThickness(0);                //внешнюю линию убираем
-        this->circle.setFillColor(sf::Color(255,255,255));  //цвет - белый, чтобы текстура не меняла свой цвет
-        this->circle.setTexture(texture);
-    }
-
-    ///////////////////////
-
-    const Body& operator= (const Body& that)
-    {
-        if (this == &that)
-            return *this;
-        position = that.position;
-        velosity = that.velosity;
-        acceleration = that.acceleration;
-        circle = that.circle;
-        EnableHitbox = that.EnableHitbox;
-        return *this;
-    }
-
-    void operator=(Body&& that)
-    {
-        std::swap(position, that.position);
-        std::swap(velosity, that.velosity);
-        std::swap(acceleration, that.acceleration);
-        std::swap(circle, that.circle);
-        std::swap(EnableHitbox, that.EnableHitbox);
-    }
+    const Body& operator= (const Body& that);
+    void operator=(Body&& that);
 };
+
+#endif
