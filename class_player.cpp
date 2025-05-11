@@ -134,7 +134,7 @@ void Player::AddPos(const Vector<double> dpos)
     position += dpos * MovementSpeed;
 }
 
-void Player::CalcMove(const double dt, std::vector<Bullet*>& Objects, Rectangle& map, sf::Event& event)
+void Player::CalcMove(const double dt, std::vector<Body*>& Objects, Rectangle& map, sf::Event& event)
 {
     Vector mapPos = map.GetPos();
     Vector<double> DeltaPosition = MovementSpeed * (velosity * dt + 0.5 * acceleration * dt * dt);
@@ -194,24 +194,22 @@ void Player::CalcMove(const double dt, std::vector<Bullet*>& Objects, Rectangle&
     }
 }
 
-bool Player::CheckCollisions(const std::vector<Bullet*>& Objects)
+std::vector<Body*>::iterator Player::CheckCollisions(std::vector<Body*>& Objects)
 {
     unsigned n = Objects.size();
     if ( std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - this->LastHitTimestamp).count() <= this->ImmunityFramesDuration)
-        return false;
+        return Objects.end();
     for (unsigned i = 0; i < n; i++)
     {
         Vector<double> distance = position - Objects[i]->GetPos();
         double mod = std::pow(std::pow(distance[0],2) + std::pow(distance[1], 2), 0.5);
-//            double mod = std::pow(distance.get_scalar_multiplication(distance), 0.5);
         if (mod <= HitboxRadius + Objects[i]->GetHitboxRadius()){
             this->Hit(20);
-
             LastHitTimestamp = std::chrono::system_clock::now();
-            return true;
+            return Objects.begin() + i;
         }
     }
-    return false;
+    return Objects.end();
 }
 
 bool Player::IsAlive()

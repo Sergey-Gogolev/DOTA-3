@@ -79,7 +79,7 @@ double Body::GetHitboxRadius() const
 
     ////////////////////////
 
-void Body::CalcMove(const double dt, Rectangle& map)
+void Body::CalcMove(const double dt, const Rectangle& map)
 {
     position += velosity * dt + 0.5 * acceleration * dt * dt;
     velosity += acceleration    * dt;

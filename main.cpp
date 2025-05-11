@@ -1,9 +1,9 @@
 #include "class_player.cpp"
 #include "class_bullet.h"
+#include "class_follower.h"
 #include "rectangle.cpp"
 #include <cstdio>
 #include <cstring>
-
 
 std::string GetStrHPBar (double hp, double mhp)
 {
@@ -32,11 +32,14 @@ int main()
     Vector<double> start_pos(2); start_pos[0] = 0; start_pos[1] = 0;
     p->SetPos(std::move(start_pos));
 
-
+    std::vector<Body*> bullets;
     unsigned int NumberOfBullets = 20;
-    std::vector<Bullet*> bullets;
     for (int i = 0; i < NumberOfBullets; i++)
         bullets.push_back(new Bullet(map));
+
+    unsigned int NumberOfFollowers = 0;
+    for (int i = 0; i < NumberOfFollowers; i++)
+        bullets.push_back(new Follower(map, p));
 
     sf::Font font;
     if (!font.loadFromFile("Driagwa.ttf"))  return EXIT_FAILURE;
@@ -75,9 +78,19 @@ int main()
                         app.close();
                     p->CalcMove(dt, bullets, map, event);
                 }
-                p->CheckCollisions(bullets);
+
+                std::vector<Body*>::iterator ChosenOne = p->CheckCollisions(bullets);
+                if (ChosenOne != bullets.end())
+                {
+                    Follower* nf = new Follower(map, p);
+                    nf->SetPos((*ChosenOne)->GetPos());
+                    nf->SetVel((*ChosenOne)->GetVel());
+                    bullets.erase(ChosenOne);
+                    bullets.push_back(nf);
+                }
+
             }
-            for (std::vector<Bullet*>::iterator it = bullets.begin(); it < bullets.end(); ++it)
+            for (std::vector<Body*>::iterator it = bullets.begin(); it < bullets.end(); ++it)
                 (*it)->CalcMove(dt, map);
             phy_engine_timing = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now());
             phy_it++;
@@ -89,7 +102,7 @@ int main()
 
             map.Draw(800,600,1,&app);
 
-            for (std::vector<Bullet*>::iterator it = bullets.begin(); it < bullets.end(); ++it)
+            for (std::vector<Body*>::iterator it = bullets.begin(); it < bullets.end(); ++it)
                 (*it)->Draw(800,600,1,&app);
 
             if (p->IsAlive())

@@ -56,8 +56,8 @@ public:
     bool Update();
     bool ControlMovement(sf::Event& event);
     void AddPos(const Vector<double> dpos);
-    void CalcMove(const double dt, std::vector<Bullet*>& Objects, Rectangle& map, sf::Event& event);
-    bool CheckCollisions(const std::vector<Bullet*>& Objects);
+    void CalcMove(const double dt, std::vector<Body*>& Objects, Rectangle& map, sf::Event& event);
+    std::vector<Body*>::iterator CheckCollisions(std::vector<Body*>& Objects);
     bool IsAlive();
 };
 

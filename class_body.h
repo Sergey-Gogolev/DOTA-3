@@ -6,6 +6,7 @@
 #include "rectangle.h"
 #include "chrono"
 
+
 class Body
 {
 protected:
@@ -43,7 +44,7 @@ public:
 
     //////////////////////// Kinematiсs
 
-    virtual void CalcMove (const double dt, Rectangle& map);
+    virtual void CalcMove (const double dt, const Rectangle& map);
     void AddPos(const Vector<double> dpos);
     void AddVel(const Vector<double> dvel);
     void AddAcs(const Vector<double> dacs);
@@ -51,7 +52,7 @@ public:
     /////////////////////// Texture
 
     void SetCircle(const unsigned int R, const unsigned int OT, const sf::Color FC, const sf::Color OC, const unsigned int PC);
-    void Draw(int w, int h, double scale, sf::RenderWindow* app);
+    virtual void Draw(int w, int h, double scale, sf::RenderWindow* app);
     void SetTexture(const sf::Texture* texture);
 
     /////////////////////// Operators overload
